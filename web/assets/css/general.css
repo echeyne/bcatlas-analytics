@@ -1,0 +1,98 @@
+body, html {
+    padding:0;
+    margin:0;
+    font-family: 'Titillium Web',sans-serif,Arial,sans-serif;
+    height: 100%;
+}
+
+/* --- HEADER BAR --- */
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-brand:hover {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 22px;
+}
+
+.navbar {
+    margin-bottom: 0;
+    background-color: #337ab7;
+}
+
+/* --- MAIN CONTENT --- */
+.content {
+    height: calc(100% - 51px);
+}
+
+.col-md-3, .col-md-9 {
+    height: 100%;
+}
+
+.col-md-9 {
+    padding: 0;
+}
+
+/* -- map -- */
+.map {
+    height: 100%;
+    width: 100%;
+}
+
+#layers-icon {
+    position: absolute;
+    z-index: 100;
+    top: 0.5em;
+    left: 3em;
+    border: 2px solid #828282;
+    border-radius: 2px;
+    background: #fcfcfc;
+    padding: 3px;
+    cursor: pointer;
+}
+
+#layers-icon:hover {
+    background-color: #afcee9;
+}
+
+/* -- right panel -- */
+.side-panel {
+    background-color: #fcfcfc;
+    border-left: 1px solid;
+}
+
+.map-tools {
+    text-align: justify;
+    margin-top: 1em;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    box-shadow: 0px 0px 10px #888888;
+}
+
+.map-tool {
+    width: 50px;
+    display: inline-block;
+    padding:2px;
+    border-radius: 5px;
+
+    /* IE fix. */
+    *display: inline;
+    zoom: 1;
+}
+
+.map-tool:hover {
+    background-color:#afcee9;
+}
+
+.map-tools:after {
+    content: "";
+    width: 100%;
+    display: inline-block;
+}
+
+.tab-content {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-top: 0;
+    padding: 1em;
+}
