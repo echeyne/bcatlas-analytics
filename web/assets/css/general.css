@@ -5,6 +5,16 @@ body, html {
     height: 100%;
 }
 
+/* --- TEXT STYLING --- */
+.strong {
+    font-weight: 600;
+}
+
+/* --- TABLES --- */
+.table>tbody>tr>td {
+    border-top: none;
+}
+
 /* --- HEADER BAR --- */
 .navbar-inverse .navbar-brand, .navbar-inverse .navbar-brand:hover {
     color: #ffffff;

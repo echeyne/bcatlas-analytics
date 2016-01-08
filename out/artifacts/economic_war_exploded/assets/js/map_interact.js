@@ -12,9 +12,16 @@ map.on('click', function (evt) {
     if (url) {
         $.ajax({
             url: url,
-            success: function() {
-                var parcelList = getParcelId();
-                getSubDivInfo(parcelList);
+            success: function(response) {
+                // retrieve the list of selected parcels
+                var parcel_list = getParcelId(response);
+
+                // get the subdivision information for the parcels and display it in the SUMMARY tab
+                getSubDivInfo(parcel_list);
+
+                // get the BCA data for the parcels and display it in the LIST tab
+                getParcelInfo(parcel_list);
+
             },
             error: function(response) {
                 console.log(response)
@@ -23,34 +30,31 @@ map.on('click', function (evt) {
     }
 });
 
-function getParcelId() {
+// gets the selected parcels from the user map click event
+function getParcelId(map_response) {
     var parser = new ol.format.GeoJSON();
-    var result = parser.readFeatures(response);
+    var result = parser.readFeatures(map_response);
 
     if (result.length) {
         var id_list = [];
         for (var i = 0, ii = result.length; i < ii; ++i) {
             // save the parcel id
             id_list.push(result[i].get('GISLkp'));
-            console.log(result[i].get('GISLkp'))
         }
     }
-
     return id_list;
 }
 
 // retrieve the census info related to a given parcel id
 // request sent to GetSubDivInfo.java
-
-// right now parcel id list is hardcoded to only take in the first element
-// on the post request
 function getSubDivInfo(parcelId) {
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "../getsubdivinfo",
-        data: {parcelId: parcelId[0]},
+        data: {parcelId: parcelId[0]}, // right now parcel id list is hardcoded to only take in the first element
         success: function(result) {
-            console.log(result);
+            var json = jQuery.parseJSON(result);
+            displaySummary(json);
         },
         error: function(result) {
             console.log('Error ' + result.toString());
@@ -58,55 +62,43 @@ function getSubDivInfo(parcelId) {
     });
 }
 
-/*
-// send census subdivision lookup to GetCenSubDiv.java
-function getCenSubDiv(response) {
-    $('#list').empty();
-
-    var parser = new ol.format.GeoJSON();
-    var result = parser.readFeatures(response);
-
-    if (result.length) {
-        var id_list = [];
-        for (var i = 0, ii = result.length; i < ii; ++i) {
-            // save the parcel id
-            id_list.push(result[i].get('GISLkp'));
-            console.log(result[i].get('GISLkp'))
+// get the address, lot info, assessment value given a list of parcels
+function getParcelInfo(parcel_list) {
+    $.ajax({
+        type: "GET",
+        url: "../getparcelinfo?parcelList=" + parcel_list.toString(),
+        //data: {parcelList: parcel_list.toString()},
+        success: function(result) {
+            var json = jQuery.parseJSON(result);
+            displayList(json);
+        },
+        error: function(result) {
+            console.log("Error " + result.toString());
         }
-
-        $.ajax({
-            type: "POST",
-            url: "../getcensubdiv",
-            data: {parcellist: id_list.toString()},
-            success: function(result) {
-                jsonArr = $.parseJSON(result);
-                getSubDivInfo(jsonArr["csduid"]);
-            },
-            error: function(result) {
-                console.log('Error ' + result.toString());
-            }
-        });
-
-    } else {
-        $('#list').append('<p>No records found for the selected property.</p>')
-    }
-
-    // retrieve the info related to a census subdivision id
-    // request sent to GetSubDivInfo.java
-    function getSubDivInfo(csduid) {
-        $.ajax({
-            type: "POST",
-            url: "../getsubdivinfo",
-            data: {csduid: csduid},
-            success: function(result) {
-                console.log(result);
-            },
-            error: function(result) {
-                console.log('Error ' + result.toString());
-            }
-        });
-    }
-
-
+    });
 }
-*/
+
+// display the list of selected parcels in the LIST tab
+// data comes in as a JSON
+function displayList(bca_data) {
+    $("#list").empty();
+
+    // create a table to hold the results
+    var html = '<table class="table table-condensed">';
+
+    $.each( bca_data, function( id, json ) {
+        html += '<tr><td colspan="2">' + json["address"] + '</td></tr>';
+        html += '<tr><td class="strong">Jurisdiction Roll</td><td>' + id + '</td></tr>';
+        html += '<tr><td class="strong">Lot Size</td><td>' + json["lot_size"] + ' ' + json["lot_dim"] + '</td></tr>';
+        html += '<tr><td class="strong">Assessed Value</td><td> $' + json["value"] + '</td></tr>';
+    });
+
+    html += '</table>';
+    $("#list").append(html);
+}
+
+function displaySummary(subdiv_data) {
+    $('#summary').empty();
+
+    $('#summary').append(subdiv_data);
+}

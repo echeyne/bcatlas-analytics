@@ -22,4 +22,12 @@
         <url-pattern>/getsubdivinfo</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GetParcelInfo</servlet-name>
+        <servlet-class>request.GetParcelInfo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetParcelInfo</servlet-name>
+        <url-pattern>/getparcelinfo</url-pattern>
+    </servlet-mapping>
 </web-app>

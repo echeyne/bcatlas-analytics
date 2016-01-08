@@ -57,10 +57,9 @@ public class GetSubDivInfo extends HttpServlet {
         retrieveSubDivInfo(csduid, response);
     }
 
-    public long retrieveCSDUID(HttpServletRequest request) throws ServletException, java.io.IOException {
+    public int retrieveCSDUID(HttpServletRequest request) throws ServletException, java.io.IOException {
         String parcelId = request.getParameter("parcelId");
-        long csduid = -1;
-
+        int csduid = -1;
         String sql = "SELECT csduid FROM Parcel WHERE jur_roll = ?";
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
@@ -69,14 +68,8 @@ public class GetSubDivInfo extends HttpServlet {
             preparedStatement = con.prepareStatement(sql);
             preparedStatement.setLong(1, Long.parseLong(parcelId.trim()));
             rs = preparedStatement.executeQuery();
-            int rowCount = 0;
-            if (rs.last()) {
-                rowCount = rs.getRow();
-                rs.beforeFirst();
-            }
-
-            if (rowCount == 1) {
-                csduid = rs.getLong("csduid");
+            while (rs.next()) {
+                csduid = rs.getInt("csduid");
             }
         } catch (SQLException e) {
             e.printStackTrace();
