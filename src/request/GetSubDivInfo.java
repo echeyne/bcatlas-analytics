@@ -1,5 +1,5 @@
 /*
-* Retrieve the properties of a census subdivision given a census subdivision id (csduid)
+* Retrieve the properties of a census subdivision given a list of parcel ids
 * results are returned in JSON format
  */
 
@@ -96,7 +96,7 @@ public class GetSubDivInfo extends HttpServlet {
     }
 
     public void retrieveSubDivInfo(Long csduid, HttpServletResponse response) throws ServletException, java.io.IOException {
-        String sql = "SELECT topic, characteristic, note, total, male, female FROM CensusSubdivision WHERE csduid = ?";
+        String sql = "SELECT topic, characteristic, note, total, male, female FROM CensusSubdivision WHERE csduid = ? ORDER BY topic";
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         JsonObjectBuilder builder = Json.createObjectBuilder();

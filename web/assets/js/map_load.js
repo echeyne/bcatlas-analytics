@@ -1,6 +1,9 @@
+var base_URL = "http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms";
+
 // load WMS from geoserver
 var wms_source = new ol.source.TileWMS({
-    url: 'http://159.203.2.8:8080/geoserver/lumby/wms',
+  url: 'http://159.203.2.8:8080/geoserver/lumby/wms',
+//    url: base_URL,
     params: {
         'LAYERS': 'lumby:Lumby_Parcels'
     },
@@ -8,18 +11,6 @@ var wms_source = new ol.source.TileWMS({
 });
 
 var wms_layer = new ol.layer.Tile({
-    source:  wms_source
-});
-
-var wms_source2 = new ol.source.TileWMS({
-    url: 'http://159.203.2.8:8080/geoserver/lumby/wms',
-    params: {
-        'LAYERS': '	census_boundaries:census_boundaries'
-    },
-    serverType: 'geoserver'
-});
-
-var wms2 = new ol.layer.Tile({
     source:  wms_source
 });
 

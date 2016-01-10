@@ -30,4 +30,13 @@
         <servlet-name>GetParcelInfo</servlet-name>
         <url-pattern>/getparcelinfo</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetSummaryInfo</servlet-name>
+        <servlet-class>request.GetSummaryInfo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetSummaryInfo</servlet-name>
+        <url-pattern>/getsummaryinfo</url-pattern>
+    </servlet-mapping>
 </web-app>

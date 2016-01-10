@@ -1,13 +1,12 @@
 /*
- * return the info related to each parcel give a list of parcels
+* Creates a summary of information to be displayed in the summary tab given either a subdivision id (csduid) or
+* a dissemination area id (dauid)
  */
 
 package request;
 
 import properties.ConnectionProperties;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,18 +14,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
-/**
- * Created by EmilyMillard on 16-01-08.
- */
-public class GetParcelInfo extends HttpServlet {
+
+public class GetSummaryInfo extends HttpServlet {
 
     private ConnectionProperties properties;
     private Connection con;
     private String url, username, password;
 
 
-    public GetParcelInfo() throws IOException {
+    public GetSummaryInfo() throws IOException {
         properties = new ConnectionProperties();
         url = properties.getProperty("database.url") + properties.getProperty("database");
         username = properties.getProperty("database.user");
@@ -46,36 +45,42 @@ public class GetParcelInfo extends HttpServlet {
         } catch (SQLException e) {
             throw new ServletException("SQLException: "+e);
         }
-    }
 
+    }
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-        retrieveParcelInfo(request, response);
+        String requestType = request.getParameter("type");
+        if (requestType.equals("csduid")) {
+            int csduid = Integer.parseInt(request.getParameter("csduid"));
+            buildSummaryCSDUID(csduid, response);
+        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-        retrieveParcelInfo(request, response);
+        String requestType = request.getParameter("idType");
+        if (requestType.equals("csduid")) {
+            int csduid = Integer.parseInt(request.getParameter("csduid"));
+            buildSummaryCSDUID(csduid, response);
+        }
     }
 
-    public void retrieveParcelInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-        String parcelList = request.getParameter("parcelList");
-        String[] parcelArr = parcelList.split(",");
-        String sql = "SELECT jur_roll, civic_addr, land_size, lot_dim, total_asses FROM Parcel WHERE jur_roll = ANY (?)";
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+    public void buildSummaryCSDUID(int csduid, HttpServletResponse response) throws ServletException, java.io.IOException {
+        String sql = "SELECT total, characteristic FROM CensusSubdivision WHERE csduid = ? AND (characteristic = ? OR characteristic = ?"
+                + "OR characteristic = ? OR characteristic = ? OR characteristic = ?)";
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
+        JsonObjectBuilder builder = Json.createObjectBuilder();
 
         try {
             preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setArray(1, con.createArrayOf("bigint", parcelArr));
+            preparedStatement.setLong(1, csduid);
+            preparedStatement.setString(2, "Population in 2011");
+            preparedStatement.setString(3, "Median age of the population");
+            preparedStatement.setString(4, "Average number of persons per census family");
+            preparedStatement.setString(5, "Total number of private households by household type");
+            preparedStatement.setString(6, "Average number of children at home per census family");
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                builder.add(
-                        String.valueOf(rs.getLong("jur_roll")), Json.createObjectBuilder()
-                            .add("address", ((rs.getString("civic_addr") == null) ? "" : rs.getString("civic_addr").trim()))
-                            .add("lot_size", ((rs.getString("land_size") == null) ? "" : rs.getString("land_size").trim()))
-                            .add("lot_dim", ((rs.getString("lot_dim") == null) ? "" : rs.getString("lot_dim").trim()))
-                            .add("value", ((rs.getString("total_asses") == null) ? "" : rs.getString("total_asses").trim()))
-                );
+                builder.add(rs.getString("characteristic"), ((rs.getObject("total").toString() == null) ? "" : rs.getObject("total").toString()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,18 +103,20 @@ public class GetParcelInfo extends HttpServlet {
                 }
             }
         }
+
         java.io.PrintWriter out = response.getWriter();
         out.println(builder.build().toString());
         out.close();
     }
 
     public void destroy() {
-        try
-        {
+        try {
             if (con != null)
                 con.close();
         }
-        catch (SQLException e)
-        {	System.err.println("SQLException: "+e); }
+        catch (SQLException e) {
+            System.err.println("SQLException: "+e);
+        }
     }
+
 }

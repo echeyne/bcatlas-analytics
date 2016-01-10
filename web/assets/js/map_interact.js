@@ -13,14 +13,13 @@ map.on('click', function (evt) {
         $.ajax({
             url: url,
             success: function(response) {
-                // retrieve the list of selected parcels
-                var parcel_list = getParcelId(response);
+                $.when(getParcelId(response)).done(function(parcel_list){
+                    // get the subdivision information for the parcels and display it in the SUMMARY tab
+                    getSubDivId(parcel_list[0]);
 
-                // get the subdivision information for the parcels and display it in the SUMMARY tab
-                getSubDivInfo(parcel_list);
-
-                // get the BCA data for the parcels and display it in the LIST tab
-                getParcelInfo(parcel_list);
+                    // get the BCA data for the parcels and display it in the LIST tab
+                    getParcelInfo(parcel_list);
+                });
 
             },
             error: function(response) {
@@ -78,6 +77,20 @@ function getParcelInfo(parcel_list) {
     });
 }
 
+function getSubDivId(parcelList) {
+    $.ajax({
+        type: "GET",
+        url: "../getcensubdiv?parcelId=" + parcelList,
+        success: function(result) {
+            var json = jQuery.parseJSON(result);
+            displaySummary(json["csduid"]);
+        },
+        error: function(result) {
+            console.log("Error " + result.toString());
+        }
+    });
+}
+
 // display the list of selected parcels in the LIST tab
 // data comes in as a JSON
 function displayList(bca_data) {
@@ -97,8 +110,28 @@ function displayList(bca_data) {
     $("#list").append(html);
 }
 
-function displaySummary(subdiv_data) {
-    $('#summary').empty();
+function displaySummary(csduid) {
+    $.ajax({
+        type: "GET",
+        url: "../getsummaryinfo?type=csduid&csduid=" + csduid,
+        success: function(result) {
+            var summary_data = jQuery.parseJSON(result);
+            var html = '<p class="small">The following summary data is provided by Statistics Canada and based on the census subdivision.'
+                + 'for the given area. A census subdivision is an area that is a municipality or an area that is deemed'
+                + 'to be equivalent to a municipality for statistical reporting purposes</p>';
+            html += '<table class="table table-striped">';
+            html += '<tr><td class="strong">Population</td><td class="text-right">' + summary_data["Population in 2011"] + '</td></tr>';
+            html += '<tr><td class="strong">Median Age</td><td class="text-right">' + summary_data["Median age of the population"] + '</td></tr>';
+            html += '<tr><td class="strong">Number of households</td><td class="text-right">' + summary_data["Total number of private households by household type"] + '</td></tr>';
+            html += '<tr><td class="strong">Number of people per family</td><td class="text-right">' + summary_data["Average number of persons per census family"] + '</td></tr>';
+            html += '<tr><td class="strong">Average number of children at home</td><td class="text-right">' + summary_data["Average number of children at home per census family"] + '</td></tr>';
 
-    $('#summary').append(subdiv_data);
+            $('#summary').empty();
+            console.log(summary_data);
+            $('#summary').append(html);
+        },
+        error: function(result) {
+            console.log("Error " + result.toString());
+        }
+    });
 }
