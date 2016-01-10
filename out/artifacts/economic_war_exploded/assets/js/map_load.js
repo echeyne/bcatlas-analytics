@@ -1,27 +1,48 @@
-var base_URL = "http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms";
-
 // load WMS from geoserver
-var wms_source = new ol.source.TileWMS({
-  url: 'http://159.203.2.8:8080/geoserver/lumby/wms',
-//    url: base_URL,
+var local_wms_source = new ol.source.TileWMS({
+  url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
     params: {
-        'LAYERS': 'lumby:Lumby_Parcels'
+        'LAYERS': 'bcatlas:lumby'
     },
     serverType: 'geoserver'
 });
 
-var wms_layer = new ol.layer.Tile({
-    source:  wms_source
+var local_wms_layer = new ol.layer.Tile({
+    source:  local_wms_source
 });
+
+var landinfo_wms_source = new ol.source.TileWMS({
+    url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
+    params: {
+        'LAYERS': 'Land_Info_Lumby:Roads, Land_Info_Lumby:Lumby Roads Label, Land_Info_Lumby:Lumby Parcels Label'
+    },
+    serverType: 'geoserver'
+});
+
+var landinfo_wms_layer = new ol.layer.Tile({
+    source:  landinfo_wms_source
+});
+
+// get basemap from bing
+//var base_map = new ol.layer.Tile({
+//    source: new ol.source.BingMaps({
+//        key: 'AoAeBI2PYslcgT4CDf-0E8xi9WLktQfKuQtnai-suWGguL0BSisxsrvfPaUe9kv0',
+//        imagerySet: "ordnanceSurvey",
+//        maxZoom: 19
+//    })
+//});
 
 // get basemap from mapquest
-var base_map = new ol.layer.Tile({
-    source: new ol.source.MapQuest({layer: 'osm'})
-});
+//var base_map = new ol.layer.Tile({
+//    source: new ol.source.MapQuest({layer: 'osm'})
+//});
+
+
 
 var layers = [
-    base_map,
-    wms_layer
+    //base_map,
+    local_wms_layer,
+    landinfo_wms_layer
 ];
 
 // set view to lumby
@@ -34,7 +55,8 @@ var view = new ol.View({
 var map = new ol.Map({
     layers: layers,
     target: 'map',
-    view: view
+    view: view,
+    loadTilesWhileInteracting: true
 });
 
 var highlight = new ol.layer.Vector({

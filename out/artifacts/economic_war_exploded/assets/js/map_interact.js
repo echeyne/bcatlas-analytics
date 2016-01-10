@@ -1,6 +1,6 @@
 // when user clicks on map find associated parcel
 map.on('click', function (evt) {
-    var url = wms_layer.getSource().getGetFeatureInfoUrl(
+    var url = local_wms_layer.getSource().getGetFeatureInfoUrl(
         evt.coordinate,
         view.getResolution(),
         view.getProjection(),
