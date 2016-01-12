@@ -38,28 +38,7 @@ var landinfo_wms_layer = new ol.layer.Tile({
 //});
 
 
-
-var layers = [
-    //base_map,
-    local_wms_layer,
-    landinfo_wms_layer
-];
-
-// set view to lumby
-var view = new ol.View({
-    center: ol.proj.transform([-118.967812,50.250416], 'EPSG:4326', 'EPSG:3857'),
-    zoom: 15
-});
-
-// create the map
-var map = new ol.Map({
-    layers: layers,
-    target: 'map',
-    view: view,
-    loadTilesWhileInteracting: true
-});
-
-var highlight = new ol.layer.Vector({
+var highlight22 = new ol.layer.Vector({
     source: new ol.source.Vector({wrapX: false}),
     style: new ol.style.Style({
         fill: new ol.style.Fill({
@@ -77,7 +56,54 @@ var highlight = new ol.layer.Vector({
         })
     })
 });
-map.addLayer(highlight);
+
+var layers = [
+    //base_map,
+    landinfo_wms_layer,
+    local_wms_layer,
+    highlight22
+];
+//
+//var view = new ol.View({
+//    projection: new ol.proj.get('EPSG:26911'),
+//    center: [359298, 5568572],
+//    zoom: 2,
+//    resolutions: [
+//        11.925225236875121, 5.962612618437561, 2.9813063092187804, 1.4906531546093902, 0.7453265773046951,
+//        0.3726632886523476, 0.1863316443261738, 0.0931658221630869
+//    ]
+//});
+
+//set view to lumby
+var view = new ol.View({
+    projection: new ol.proj.get('EPSG:26911'),
+    center: [359298, 5568572],
+    //center: ol.proj.transform([-118.967812,50.250416], 'EPSG:4326', 'EPSG:3857'),
+    zoom: 15
+});
+
+// create the map
+var map = new ol.Map({
+    layers: layers,
+    target: 'map',
+    view: view,
+    loadTilesWhileInteracting: true,
+    bounds: [352474.5483727603, 5561335.500385814, 379061.82093737787, 5604565.543100912]
+});
+
+var highlight_overlay = new ol.FeatureOverlay({
+    map: map,
+    style: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: [255, 0, 0, 0.6],
+            width: 2
+        }),
+        fill: new ol.style.Fill({
+            color: [255, 0, 0, 0.2]
+        }),
+        zIndex: 1000
+    })
+});
 
 
 

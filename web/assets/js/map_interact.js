@@ -1,6 +1,31 @@
-// when user clicks on map find associated parcel
-map.on('click', function (evt) {
+
+map.on('singleclick', function(evt) {
+    highlight_feature(evt);
+});
+
+function highlight_feature(evt) {
+
+    var parser = new ol.format.WMSGetFeatureInfo();
+    var view = map.getView();
+
     var url = local_wms_layer.getSource().getGetFeatureInfoUrl(
+        evt.coordinate,
+        view.getResolution(),
+        view.getProjection(),
+        {
+            'INFO_FORMAT': 'application/vnd.ogc.gml'
+        });
+    $.ajax(url).then(function(response) {
+        var features = parser.readFeatures(response);
+        highlight_overlay.setFeatures(new ol.Collection(features));
+    });
+}
+
+//when user clicks on map find associated parcel
+map.on('click', function (evt) {
+
+    var view = map.getView();
+    var jsonURL = local_wms_layer.getSource().getGetFeatureInfoUrl(
         evt.coordinate,
         view.getResolution(),
         view.getProjection(),
@@ -9,10 +34,14 @@ map.on('click', function (evt) {
         }
     );
 
-    if (url) {
+
+    if (jsonURL) {
         $.ajax({
-            url: url,
+            url: jsonURL,
             success: function(response) {
+                var parser = new ol.format.GeoJSON();
+                var source = highlight22.getSource();
+                source.addFeatures(parser.readFeatures(response));
                 $.when(getParcelId(response)).done(function(parcel_list){
                     // get the subdivision information for the parcels and display it in the SUMMARY tab
                     getSubDivId(parcel_list[0]);
@@ -66,7 +95,6 @@ function getParcelInfo(parcel_list) {
     $.ajax({
         type: "GET",
         url: "../getparcelinfo?parcelList=" + parcel_list.toString(),
-        //data: {parcelList: parcel_list.toString()},
         success: function(result) {
             var json = jQuery.parseJSON(result);
             displayList(json);
@@ -127,7 +155,6 @@ function displaySummary(csduid) {
             html += '<tr><td class="strong">Average number of children at home</td><td class="text-right">' + summary_data["Average number of children at home per census family"] + '</td></tr>';
 
             $('#summary').empty();
-            console.log(summary_data);
             $('#summary').append(html);
         },
         error: function(result) {
