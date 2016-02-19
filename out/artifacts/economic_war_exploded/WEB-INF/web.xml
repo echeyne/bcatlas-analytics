@@ -39,4 +39,13 @@
         <servlet-name>GetSummaryInfo</servlet-name>
         <url-pattern>/getsummaryinfo</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetDemoInfo</servlet-name>
+        <servlet-class>request.GetDemoInfo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetDemoInfo</servlet-name>
+        <url-pattern>/getdemoinfo</url-pattern>
+    </servlet-mapping>
 </web-app>
