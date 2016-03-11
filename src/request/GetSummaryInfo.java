@@ -80,7 +80,8 @@ public class GetSummaryInfo extends HttpServlet {
             preparedStatement.setString(6, "Average number of children at home per census family");
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                builder.add(rs.getString("characteristic"), ((rs.getObject("total").toString() == null) ? "" : rs.getObject("total").toString()));
+                String title = rs.getString("characteristic").replaceAll("[^\\x00-\\x7F]", "").trim();
+                builder.add(title ,((rs.getObject("total").toString() == null) ? "" : rs.getObject("total").toString()));
             }
         } catch (SQLException e) {
             e.printStackTrace();

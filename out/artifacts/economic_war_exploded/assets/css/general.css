@@ -32,15 +32,15 @@ body, html {
     height: calc(100% - 51px);
 }
 
-.col-md-3, .col-md-9 {
+.col-md-3, .col-md-9, .col-md-4, .col-md-8 {
     height: 100%;
 }
 
-.col-md-9 {
+.col-md-9, .col-md-8 {
     padding: 0;
 }
 
-/* -- map -- */
+/* -- MAP -- */
 .map {
     height: 100%;
     width: 100%;
@@ -62,10 +62,14 @@ body, html {
     background-color: #afcee9;
 }
 
-/* -- right panel -- */
+/* -- RIGHT PANEL -- */
 .side-panel {
     background-color: #fcfcfc;
     border-left: 1px solid;
+}
+
+.nav-tabs {
+    margin-top: 10px;
 }
 
 .map-tools {
@@ -105,4 +109,19 @@ body, html {
     border: 1px solid #ddd;
     border-top: 0;
     padding: 1em;
+    max-height: calc(100% - 85px);
+    overflow: scroll;
 }
+
+.throbber img {
+    width: 200px;
+    margin: 0 auto;
+    display: block;
+}
+
+.chart-title {
+    margin: 30px 0 15px 0;
+    text-align: center;
+    font-weight: 600;
+}
+

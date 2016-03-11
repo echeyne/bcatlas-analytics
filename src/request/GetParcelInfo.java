@@ -59,7 +59,7 @@ public class GetParcelInfo extends HttpServlet {
     public void retrieveParcelInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
         String parcelList = request.getParameter("parcelList");
         String[] parcelArr = parcelList.split(",");
-        String sql = "SELECT jur_roll, civic_addr, land_size, lot_dim, total_asses FROM Parcel WHERE jur_roll = ANY (?)";
+        String sql = "SELECT jur_roll, civic_addr, land_size, lot_dim, land_asses, build_asses, total_asses FROM Parcel WHERE jur_roll = ANY (?)";
         JsonObjectBuilder builder = Json.createObjectBuilder();
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
@@ -74,7 +74,9 @@ public class GetParcelInfo extends HttpServlet {
                             .add("address", ((rs.getString("civic_addr") == null) ? "" : rs.getString("civic_addr").trim()))
                             .add("lot_size", ((rs.getString("land_size") == null) ? "" : rs.getString("land_size").trim()))
                             .add("lot_dim", ((rs.getString("lot_dim") == null) ? "" : rs.getString("lot_dim").trim()))
-                            .add("value", ((rs.getString("total_asses") == null) ? "" : rs.getString("total_asses").trim()))
+                            .add("land_asses", ((rs.getString("land_asses") == null) ? "" : rs.getString("land_asses").trim()))
+                            .add("build_asses", ((rs.getString("build_asses") == null) ? "" : rs.getString("build_asses").trim()))
+                            .add("total_asses", ((rs.getString("total_asses") == null) ? "" : rs.getString("total_asses").trim()))
                 );
             }
         } catch (SQLException e) {

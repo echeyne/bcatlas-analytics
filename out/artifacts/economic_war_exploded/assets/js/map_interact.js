@@ -112,7 +112,6 @@ function getSubDivId(parcelList) {
 // data comes in as a JSON
 function displayList(bca_data) {
     $("#list").empty();
-
     // create a table to hold the results
     var html = '<table class="table table-condensed">';
 
@@ -120,7 +119,9 @@ function displayList(bca_data) {
         html += '<tr><td colspan="2">' + json["address"] + '</td></tr>';
         html += '<tr><td class="strong">Jurisdiction Roll</td><td>' + id + '</td></tr>';
         html += '<tr><td class="strong">Lot Size</td><td>' + json["lot_size"] + ' ' + json["lot_dim"] + '</td></tr>';
-        html += '<tr><td class="strong">Assessed Value</td><td> $' + json["value"] + '</td></tr>';
+        html += '<tr><td class="strong">Assessed Land Value</td><td> $' + json["land_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td class="strong">Assessed Building Value</td><td> $' + json["build_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td class="strong">Total Assessed Value</td><td> $' + json["total_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
     });
 
     html += '</table>';
@@ -129,14 +130,21 @@ function displayList(bca_data) {
 
 // display a summary of the surrounding demographics
 function displaySummary(csduid) {
+    // display throbber to show user that demo info is being collected
+    $('#summary').empty();
+    var html = '<div class="throbber">' +
+        '<p>Your information is loading.</p>' +
+        '<img src="assets/images/loading.gif" title="Loading" alt="Please wait, your content is loading" />';
+    $('#summary').append(html);
+
     $.ajax({
         type: "GET",
             url: "../getsummaryinfo?type=csduid&csduid=" + csduid,
         success: function(result) {
             var summary_data = jQuery.parseJSON(result);
-            var html = '<p class="small">The following summary data is provided by Statistics Canada and based on the census subdivision.'
-                + 'for the given area. A census subdivision is an area that is a municipality or an area that is deemed'
-                + 'to be equivalent to a municipality for statistical reporting purposes</p>';
+            var html = '<p class="small">The following summary data is provided by Statistics Canada based on the census subdivision'
+                + ' of the given area. A census subdivision is an area that is a municipality or an area that is deemed'
+                + ' to be equivalent to a municipality for statistical reporting purposes.</p>';
             html += '<table class="table table-striped">';
             html += '<tr><td class="strong">Population</td><td class="text-right">' + summary_data["Population in 2011"] + '</td></tr>';
             html += '<tr><td class="strong">Median Age</td><td class="text-right">' + summary_data["Median age of the population"] + '</td></tr>';
@@ -154,26 +162,43 @@ function displaySummary(csduid) {
 }
 
 function displayDemo(csduid) {
+    console.log(csduid);
+
+    // display throbber to show user that demo info is being collected
+    $('#demographics').empty();
+    var html = '<div class="throbber">' +
+        '<p>Your information is loading.</p>' +
+        '<img src="assets/images/loading.gif" title="Loading" alt="Please wait, your content is loading" />';
+    $('#demographics').append(html);
+
     $.ajax({
         type: "GET",
         url: "../getdemoinfo?type=csduid&csduid=" + csduid,
         success: function(result) {
             var demo_data = jQuery.parseJSON(result);
-            console.log('hi');
-            var html = '<p class="small">The following summary data is provided by Statistics Canada and based on the census subdivision.'
-                + 'for the given area. A census subdivision is an area that is a municipality or an area that is deemed'
-                + 'to be equivalent to a municipality for statistical reporting purposes</p>';
+            var html = '<p class="small">The following demographics data is provided by Statistics Canada based on the census subdivision'
+                + ' of the given area. A census subdivision is an area that is a municipality or an area that is deemed'
+                + ' to be equivalent to a municipality for statistical reporting purposes.</p>';
 
-            html += '<div id="age-chart"></div>';
-            html += '<div id="marriage-chart"></div>';
-            html += '<div id="language-chart"></div>';
-            html += '<div id="dwelling-chart"></div>';
+            html += '<p class="chart-title">Population by Age Group</p>' +
+                '<div id="age-chart"></div>' +
+                '<p class="chart-title">Population by Marital Status</p>' +
+                '<div id="marriage-chart"></div>' +
+                '<p class="chart-title">Population by Language Spoken at Home</p>' +
+                '<div id="language-chart"></div>' +
+                '<p class="chart-title">Population by Dwelling Type</p>' +
+                '<div id="dwelling-type-chart"></div>' +
+                '<p class="chart-title">Population by Dwelling Size</p>' +
+                '<div id="dwelling-size-chart"></div>';
 
             $('#demographics').empty();
             $('#demographics').append(html);
 
             formatAgeData(demo_data);
             formatMarriageData(demo_data);
+            formatLanguageData(demo_data);
+            formatDwellingTypeData(demo_data);
+            formatDwellingSizeData(demo_data);
         },
         error: function(result) {
             console.log("Error " + result.toString());
@@ -216,11 +241,7 @@ function formatAgeData(json) {
         ['80+',       (pop_80_84 + pop_85_over)/total_pop]
     ]);
 
-    var options = {
-        title: 'Population by Age Group'
-    };
-
-    drawChart(data, options, 'age-chart');
+    drawChart(data, 'Population by Age Group', 'age-chart');
 }
 
 // format and display demographics by marital status
@@ -243,11 +264,79 @@ function formatMarriageData(json) {
         ['Widowed', widowed/total_pop]
     ]);
 
-    var options = {
-        title: 'Marital Status'
-    };
+    drawChart(data, 'Marital Status', 'marriage-chart');
+}
 
-    drawChart(data, options, 'marriage-chart');
+// format and display demographics by language
+function formatLanguageData(json) {
+    // for the purposes of data display only single responses are shown
+    var total_pop = json["language"]["Single responses"]["total"];
+    var english = json["language"]["English"]["total"];
+    var french = json["language"]["French"]["total"];
+    var select_aboriginal = json["language"]["Selected Aboriginal languages"]["total"];
+    var select_non_aboriginal = json["language"]["Selected non-Aboriginal languages"]["total"];
+
+    var data = google.visualization.arrayToDataTable([
+        ['Languages', 'Percentage of Population'],
+        ['English', english/total_pop],
+        ['French', french/total_pop],
+        ['Select Aboriginal Languages', select_aboriginal/total_pop],
+        ['Select Non-Aboriginal Languages', select_non_aboriginal/total_pop]
+    ]);
+
+    drawChart(data, 'Languages', 'language-chart');
+}
+
+// format and display demographics by dwelling type
+function formatDwellingTypeData(json) {
+    var total_pop = json["dwelling"]["Total number of occupied private dwellings by structural type of dwelling"]["total"];
+    var house = json["dwelling"]["Single-detached house"]["total"];
+    var apart_5gt = json["dwelling"]["Apartment, building that has five or more storeys"]["total"];
+    var apart_5lt = json["dwelling"]["Apartment, building that has fewer than five storeys"]["total"];
+    var movable = json["dwelling"]["Movable dwelling"]["total"];
+    var other = json["dwelling"]["Other dwelling"]["total"];
+    var semi_detached = json["dwelling"]["Semi-detached house"]["total"];
+    var row_house = json["dwelling"]["Row house"]["total"];
+    var duplex = json["dwelling"]["Apartment, duplex"]["total"];
+
+
+    var data = google.visualization.arrayToDataTable([
+        ['Private Dwelling Types', 'Percent of all Dwellings'],
+        ['Single-detached House', house/total_pop],
+        ['Apartment, 5 or more floors', apart_5gt/total_pop],
+        ['Apartment, 4 or fewer floors', apart_5lt/total_pop],
+        ['Apartment, duplex', duplex/total_pop],
+        ['Mobile Homes', movable/total_pop],
+        ['Semi-detached House', semi_detached/total_pop],
+        ['Row House', row_house/total_pop],
+        ['Other', other/total_pop]
+    ]);
+
+    drawChart(data, 'Dwelling Type', 'dwelling-type-chart');
+}
+
+// format and display demographics by dwelling size
+function formatDwellingSizeData(json) {
+    var total_pop = json["dwelling"]["Total number of private households by household size"]["total"];
+    var one_ppl = json["dwelling"]["1 person"]["total"];
+    var two_ppl = json["dwelling"]["2 persons"]["total"];
+    var three_ppl = json["dwelling"]["3 persons"]["total"];
+    var four_ppl = json["dwelling"]["4 persons"]["total"];
+    var five_ppl = json["dwelling"]["5 persons"]["total"];
+    var six_plus = json["dwelling"]["6 or more persons"]["total"];
+
+
+    var data = google.visualization.arrayToDataTable([
+        ['Private Dwelling Size', 'Percent of all Dwellings'],
+        ['1 Person', one_ppl/total_pop],
+        ['2 People', two_ppl/total_pop],
+        ['3 People', three_ppl/total_pop],
+        ['4 People', four_ppl/total_pop],
+        ['5 People', five_ppl/total_pop],
+        ['6 or More People', six_plus/total_pop]
+    ]);
+
+    drawChart(data, 'Dwelling Size', 'dwelling-size-chart');
 }
 
 // on click of the draw polygon button enable drawing
@@ -291,9 +380,17 @@ function controlDoubleClickZoom(active){
     }
 }
 
-function drawChart(data, options, div_id) {
+// draw the google chart
+function drawChart(data, title, div_id) {
+    var options = {
+        titlePosition: 'none',
+        chartArea: {width:'92%',height:'92%'},
+        tooltip: {text: 'percentage'},
+        pieSliceText: 'none'
+    };
 
-    var chart = new google.visualization.PieChart(document.getElementById(div_id));
-
-    chart.draw(data, options);
+    if (document.getElementById(div_id)) {
+        var chart = new google.visualization.PieChart(document.getElementById(div_id));
+        chart.draw(data, options);
+    }
 }

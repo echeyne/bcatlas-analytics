@@ -96,7 +96,8 @@ public class GetDemoInfo extends HttpServlet {
             preparedStatement.setString(2, topic);
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                builder.add((rs.getString("characteristic")).replaceAll("\\p{C}", "?").trim(), Json.createObjectBuilder()
+                String title = rs.getString("characteristic").replaceAll("[^\\x00-\\x7F]", "").trim();
+                builder.add(title, Json.createObjectBuilder()
                                 .add("total", rs.getInt("total"))
                                 .add("male", rs.getInt("male"))
                                 .add("female", rs.getInt("female"))
