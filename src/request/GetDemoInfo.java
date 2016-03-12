@@ -49,28 +49,38 @@ public class GetDemoInfo extends HttpServlet {
     }
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
         String requestType = request.getParameter("type");
-        if (requestType.equals("csduid")) {
+        String dataSource = request.getParameter("source");
+        if (requestType.equals("csduid") && dataSource.equals("census")) {
             int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUID(csduid, response);
+            buildDemoCSDUIDCensus(csduid, response);
+        }
+        else if (requestType.equals("csduid") && dataSource.equals("nhs")) {
+            int csduid = Integer.parseInt(request.getParameter("csduid"));
+            buildDemoCSDUIDNHS(csduid, response);
         }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-        String requestType = request.getParameter("idType");
-        if (requestType.equals("csduid")) {
+        String requestType = request.getParameter("type").toLowerCase();
+        String dataSource = request.getParameter("source").toLowerCase();
+        if (requestType.equals("csduid") && dataSource.equals("census")) {
             int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUID(csduid, response);
+            buildDemoCSDUIDCensus(csduid, response);
+        }
+        else if (requestType.equals("csduid") && dataSource.equals("nhs")) {
+            int csduid = Integer.parseInt(request.getParameter("csduid"));
+            buildDemoCSDUIDNHS(csduid, response);
         }
     }
 
-    public void buildDemoCSDUID(int csduid, HttpServletResponse response) throws ServletException, java.io.IOException {
+    public void buildDemoCSDUIDCensus(int csduid, HttpServletResponse response) throws ServletException, java.io.IOException {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         // create individual json objects for each topic we are interested in
-        JsonObjectBuilder age = doDemoQuery(csduid, "Age characteristics");
-        JsonObjectBuilder maritalStatus = doDemoQuery(csduid, "Marital status");
-        JsonObjectBuilder language = doDemoQuery(csduid, "Detailed language spoken most often at home");
-        JsonObjectBuilder dwelling = doDemoQuery(csduid, "Household and dwelling characteristics");
+        JsonObjectBuilder age = doDemoQueryCensus(csduid, "Age characteristics");
+        JsonObjectBuilder maritalStatus = doDemoQueryCensus(csduid, "Marital status");
+        JsonObjectBuilder language = doDemoQueryCensus(csduid, "Detailed language spoken most often at home");
+        JsonObjectBuilder dwelling = doDemoQueryCensus(csduid, "Household and dwelling characteristics");
 
         // add all of the obtained json to the builder
         builder.add("age", age);
@@ -83,9 +93,80 @@ public class GetDemoInfo extends HttpServlet {
         out.close();
     }
 
-    public JsonObjectBuilder doDemoQuery(int csduid, String topic) {
+    public JsonObjectBuilder doDemoQueryCensus(int csduid, String topic) {
 
         String sql = "SELECT characteristic, total, male, female FROM CensusSubdivision WHERE csduid = ? AND topic = ?";
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        try {
+            preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setLong(1, csduid);
+            preparedStatement.setString(2, topic);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                String title = rs.getString("characteristic").replaceAll("[^\\x00-\\x7F]", "").trim();
+                builder.add(title, Json.createObjectBuilder()
+                                .add("total", rs.getInt("total"))
+                                .add("male", rs.getInt("male"))
+                                .add("female", rs.getInt("female"))
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return builder;
+    }
+
+    public void buildDemoCSDUIDNHS(int csduid, HttpServletResponse response) throws ServletException, java.io.IOException {
+        // NHS data for Lumby (csduid == 5937005) is unavailable so for purposes of this demo we follow the government of
+        // Canada's suggestion and use the data for Coldstream (csduiid == 5937010)
+        if (csduid == 5937005) {
+            csduid = 5937010;
+        }
+
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        // create individual json objects for each topic we are interested in
+        JsonObjectBuilder education = doDemoQueryNHS(csduid, "Education");
+        JsonObjectBuilder occupation = doDemoQueryNHS(csduid, "Occupation");
+        JsonObjectBuilder income = doDemoQueryNHS(csduid, "Income of individuals in 2010");
+        JsonObjectBuilder household = doDemoQueryNHS(csduid, "Household characteristics");
+
+        // add all of the obtained json to the builder
+        builder.add("education", education);
+        builder.add("occupation", occupation);
+        builder.add("income", income);
+        builder.add("household", household);
+
+        java.io.PrintWriter out = response.getWriter();
+        out.println(builder.build().toString());
+        out.close();
+    }
+
+    public JsonObjectBuilder doDemoQueryNHS(int csduid, String topic) {
+
+        String sql = "SELECT characteristic, total, male, female FROM bcNHS WHERE csduid = ? AND topic = ?";
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         JsonObjectBuilder builder = Json.createObjectBuilder();
