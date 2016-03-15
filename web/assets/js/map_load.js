@@ -1,44 +1,77 @@
-// load WMS from geoserver
-var local_wms_source = new ol.source.TileWMS({
-  url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
-    params: {
-        'LAYERS': 'bcatlas:lumby'
-    },
-    serverType: 'geoserver'
+// map_load.js
+// All functions responsible for creating the map
+
+// load all of the layers from geoserver
+// each layer must be loaded individually so it can be manipulated by the legend
+var parcels = new ol.layer.Tile({
+    title: 'Parcels',
+    source:  new ol.source.TileWMS({
+        url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
+        params: {
+            'LAYERS': 'BCAtlas:lumby_parcels'
+        },
+        serverType: 'geoserver'
+    })
 });
 
-var local_wms_layer = new ol.layer.Tile({
-    source:  local_wms_source
+var parcels_labels = new ol.layer.Tile({
+    title: 'Parcel Labels',
+    source:  new ol.source.TileWMS({
+        url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
+        params: {
+            'LAYERS': 'Land_Info_Lumby:Lumby Parcels Label'
+        },
+        serverType: 'geoserver'
+    })
 });
 
-var landinfo_wms_source = new ol.source.TileWMS({
-    url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
-    params: {
-        'LAYERS': 'Land_Info_Lumby:Roads, Land_Info_Lumby:Lumby Roads Label, Land_Info_Lumby:Lumby Parcels Label'
-    },
-    serverType: 'geoserver'
+var boundary = new ol.layer.Tile({
+    title: 'Municipal Boundary',
+    source:  new ol.source.TileWMS({
+        url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
+        params: {
+            'LAYERS': 'BCAtlas:lumby_municipal_boundary'
+        },
+        serverType: 'geoserver'
+    })
 });
 
-var landinfo_wms_layer = new ol.layer.Tile({
-    source:  landinfo_wms_source
+var roads = new ol.layer.Tile({
+    title: 'Roads',
+    source:  new ol.source.TileWMS({
+        url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
+        params: {
+            'LAYERS': 'Land_Info_Lumby:Roads'
+        },
+        serverType: 'geoserver'
+    })
 });
 
-// get basemap from bing
-//var base_map = new ol.layer.Tile({
-//    source: new ol.source.BingMaps({
-//        key: 'AoAeBI2PYslcgT4CDf-0E8xi9WLktQfKuQtnai-suWGguL0BSisxsrvfPaUe9kv0',
-//        imagerySet: "ordnanceSurvey",
-//        maxZoom: 19
-//    })
-//});
+var roads_label = new ol.layer.Tile({
+    title: 'Road Labels',
+    source:  new ol.source.TileWMS({
+        url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
+        params: {
+            'LAYERS': 'Land_Info_Lumby:Lumby Roads Label'
+        },
+        serverType: 'geoserver'
+    })
+});
 
-// get basemap from mapquest
-//var base_map = new ol.layer.Tile({
-//    source: new ol.source.MapQuest({layer: 'osm'})
-//});
 
+var ortho = new ol.layer.Tile({
+    title: 'Orthophotos',
+    source:  new ol.source.TileWMS({
+        url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
+        params: {
+            'LAYERS': 'Land_Info_Lumby:Lumby_Orthos'
+        },
+        serverType: 'geoserver'
+    })
+});
 
 var highlight_overlay = new ol.layer.Vector({
+    title: 'Highlight Feature',
     source: new ol.source.Vector({wrapX: false}),
     style: new ol.style.Style({
         fill: new ol.style.Fill({
@@ -58,8 +91,12 @@ var highlight_overlay = new ol.layer.Vector({
 });
 
 var layers = [
-    landinfo_wms_layer,
-    local_wms_layer,
+    ortho,
+    parcels,
+    parcels_labels,
+    roads,
+    roads_label,
+    boundary,
     highlight_overlay
 ];
 
@@ -93,5 +130,6 @@ var feature_overlay = new ol.FeatureOverlay({
     })
 });
 
-
-
+map.getLayers().forEach(function(layer, i) {
+    console.log(layer.get('title'))
+});

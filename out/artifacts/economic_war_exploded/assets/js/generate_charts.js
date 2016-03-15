@@ -1,3 +1,6 @@
+// generate_charts.js
+// creates the charts displayed in the side panel under census and nhs demographics
+
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 

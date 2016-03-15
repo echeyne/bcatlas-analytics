@@ -1,8 +1,11 @@
+// map_interact.js
+// handles all of the user interactions with the map
+
 //when user clicks on map find associated parcel and highlight
 map.on('singleclick', function (evt) {
     if (draw == undefined || !draw.getActive()) {
         var view = map.getView();
-        var jsonURL = local_wms_layer.getSource().getGetFeatureInfoUrl(
+        var jsonURL = parcels.getSource().getGetFeatureInfoUrl(
             evt.coordinate,
             view.getResolution(),
             view.getProjection(),
@@ -10,19 +13,19 @@ map.on('singleclick', function (evt) {
                 'INFO_FORMAT': 'application/json'
             }
         );
-
-
         if (jsonURL) {
             $.ajax({
                 url: jsonURL,
                 success: function (response) {
                     highlightFeature(response);
                     $.when(getParcelId(response)).done(function (parcel_list) {
-                        // get the subdivision information for the parcels and display it in the SUMMARY tab
-                        getSubDivId(parcel_list[0]);
+                        if (typeof(parcel_list) != 'undefined') {
+                            // get the subdivision information for the parcels and display it in the SUMMARY tab
+                            getSubDivId(parcel_list[0]);
 
-                        // get the BCA data for the parcels and display it in the LIST tab
-                        getParcelInfo(parcel_list);
+                            // get the BCA data for the parcels and display it in the LIST tab
+                            getParcelInfo(parcel_list);
+                        }
                     });
 
                 },
