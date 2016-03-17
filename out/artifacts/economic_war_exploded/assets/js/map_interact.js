@@ -319,3 +319,13 @@ function controlDoubleClickZoom(active){
         }
     }
 }
+
+// handle when the user clicks a legend checkbox to turn a layer on/off
+// NOTE: when we get the checked value the check has already happened
+function toggleLayer(layerName, checked) {
+    map.getLayers().forEach(function(layer) {
+        if (layer.get('title') == layerName) {
+            layer.setVisible(checked)
+        }
+    });
+}

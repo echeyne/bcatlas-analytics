@@ -48,29 +48,89 @@ public class GetDemoInfo extends HttpServlet {
 
     }
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-        String requestType = request.getParameter("type");
-        String dataSource = request.getParameter("source");
-        if (requestType.equals("csduid") && dataSource.equals("census")) {
+        String requestType = request.getParameter("type").toLowerCase();
+        String dataSource = request.getParameter("source").toLowerCase();
+        if (requestType.equals("csduid")) {
             int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUIDCensus(csduid, response);
+            if (dataSource.equals("census")) {
+                buildDemoCSDUIDCensus(csduid, response);
+            }
+            else if (dataSource.equals("nhs")) {
+                buildDemoCSDUIDNHS(csduid, response);
+            }
         }
-        else if (requestType.equals("csduid") && dataSource.equals("nhs")) {
-            int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUIDNHS(csduid, response);
+        else if (requestType.equals("pid")) {
+            long pid = Long.parseLong(request.getParameter("pid"));
+            int csduid = getCSDUID(pid);
+            if (dataSource.equals("census")) {
+                buildDemoCSDUIDCensus(csduid, response);
+            }
+            else if (dataSource.equals("nhs")) {
+                buildDemoCSDUIDNHS(csduid, response);
+            }
         }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
         String requestType = request.getParameter("type").toLowerCase();
         String dataSource = request.getParameter("source").toLowerCase();
-        if (requestType.equals("csduid") && dataSource.equals("census")) {
+        if (requestType.equals("csduid")) {
             int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUIDCensus(csduid, response);
+            if (dataSource.equals("census")) {
+                buildDemoCSDUIDCensus(csduid, response);
+            }
+            else if (dataSource.equals("nhs")) {
+                buildDemoCSDUIDNHS(csduid, response);
+            }
         }
-        else if (requestType.equals("csduid") && dataSource.equals("nhs")) {
-            int csduid = Integer.parseInt(request.getParameter("csduid"));
-            buildDemoCSDUIDNHS(csduid, response);
+        else if (requestType.equals("pid")) {
+            int pid = Integer.parseInt(request.getParameter("pid"));
+            int csduid = getCSDUID(pid);
+            if (dataSource.equals("census")) {
+                buildDemoCSDUIDCensus(csduid, response);
+            }
+            else if (dataSource.equals("nhs")) {
+                buildDemoCSDUIDNHS(csduid, response);
+            }
         }
+    }
+
+    // get the csduid if user sent in pid
+    public int getCSDUID(long pid) {
+        String sql = "SELECT csduid FROM ParcelMappings WHERE jur_roll = ?";
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        int csduid = -1;
+
+        try {
+            preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setLong(1, pid);
+            rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                csduid = rs.getInt("csduid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return csduid;
     }
 
     public void buildDemoCSDUIDCensus(int csduid, HttpServletResponse response) throws ServletException, java.io.IOException {

@@ -16,6 +16,7 @@ var parcels = new ol.layer.Tile({
 
 var parcels_labels = new ol.layer.Tile({
     title: 'Parcel Labels',
+    visible: false,
     source:  new ol.source.TileWMS({
         url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
         params: {
@@ -49,6 +50,7 @@ var roads = new ol.layer.Tile({
 
 var roads_label = new ol.layer.Tile({
     title: 'Road Labels',
+    visible: false,
     source:  new ol.source.TileWMS({
         url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
         params: {
@@ -71,7 +73,7 @@ var ortho = new ol.layer.Tile({
 });
 
 var highlight_overlay = new ol.layer.Vector({
-    title: 'Highlight Feature',
+    title: 'Highlighted Feature',
     source: new ol.source.Vector({wrapX: false}),
     style: new ol.style.Style({
         fill: new ol.style.Fill({
@@ -103,8 +105,9 @@ var layers = [
 //set view to lumby
 var view = new ol.View({
     projection: new ol.proj.get('EPSG:26911'),
-    center: [359298, 5568572],
-    zoom: 15
+    center: [359498, 5568372],
+    zoom: 15,
+    minZoom: 15
 });
 
 // create the map
@@ -113,7 +116,7 @@ var map = new ol.Map({
     target: 'map',
     view: view,
     loadTilesWhileInteracting: true,
-    bounds: [352474.5483727603, 5561335.500385814, 379061.82093737787, 5604565.543100912],
+    bounds: [352474.5483727603, 5561335.500385814, 379061.82093737787, 5604565.543100912]
 });
 
 var feature_overlay = new ol.FeatureOverlay({
@@ -130,8 +133,14 @@ var feature_overlay = new ol.FeatureOverlay({
     })
 });
 
-// http://159.203.2.8:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=bcatlas:lumby
-
-map.getLayers().forEach(function(layer, i) {
-    console.log(layer.get('title'))
+// add each layer as a checkbox in the legend
+map.getLayers().forEach(function(layer) {
+    if (layer != highlight_overlay) {
+        var html = '<div class="checkbox">'
+            + '<label><input type="checkbox" value="' + layer.get('title') +'" onclick="toggleLayer(this.value, $(this).is(\':checked\'))"'
+            + ( layer.getVisible() ?  'checked>' : '>')
+            + layer.get('title') + '</label>'
+            + '</div>';
+        $('#legend-content').append(html);
+    }
 });
