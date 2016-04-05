@@ -48,4 +48,13 @@
         <servlet-name>GetDemoInfo</servlet-name>
         <url-pattern>/getdemoinfo</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetShapeIntersection</servlet-name>
+        <servlet-class>request.GetShapeIntersection</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetShapeIntersection</servlet-name>
+        <url-pattern>/getshapeintersection</url-pattern>
+    </servlet-mapping>
 </web-app>

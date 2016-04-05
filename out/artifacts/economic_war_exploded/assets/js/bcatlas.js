@@ -48,4 +48,23 @@ $(document).click( function() {
         $("#legend-content").removeClass('open');
         $("#legend-content").addClass('closed');
     }
+    if ($('#tools-content').hasClass('open')) {
+        $("#tools-content").slideToggle();
+        $("#tools-content").removeClass('open');
+        $("#tools-content").addClass('closed');
+    }
+});
+
+// show or hide the legend
+$('#tools-icon').on("click", function(e){
+    e.stopPropagation();
+    $( "#tools-content" ).slideToggle();
+    if ($('#tools-content').hasClass('open')) {
+        $("#tools-content").removeClass('open');
+        $("#tools-content").addClass('closed');
+    }
+    else {
+        $("#tools-content").removeClass('closed');
+        $("#tools-content").addClass('open');
+    }
 });

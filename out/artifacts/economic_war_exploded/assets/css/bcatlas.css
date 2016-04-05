@@ -46,11 +46,9 @@ body, html {
     width: 100%;
 }
 
-#layers-icon {
+#layers-icon, #tools-icon {
     position: absolute;
     z-index: 100;
-    top: 0.5em;
-    left: 3em;
     border: 2px solid #828282;
     border-radius: 2px;
     background: #fcfcfc;
@@ -58,20 +56,38 @@ body, html {
     cursor: pointer;
 }
 
-#layers-icon:hover {
+#layers-icon {
+    top: 0.5em;
+    left: 3em;
+}
+
+#tools-icon {
+    top: 0.5em;
+    left: 6em;
+}
+
+#layers-icon:hover, #tools-icon:hover {
     background-color: #afcee9;
 }
 
-#legend-content {
-    background-color: #afcee9;
+#legend-content, #tools-content {
+    background-color: #fcfcfc;
     position: absolute;
-    top: 2.5em;
-    left: 4em;
     padding: 5px;
     border: 1px solid #828282;
     border-radius: 2px;
     display: none;
     z-index: 99;
+}
+
+#legend-content {
+    top: 2.5em;
+    left: 4em;
+}
+
+#tools-content {
+    top: 2.5em;
+    left: 7em;
 }
 
 #collapse {
@@ -115,7 +131,6 @@ body, html {
 }
 
 .map-tool {
-    width: 50px;
     display: inline-block;
     padding:2px;
     border-radius: 5px;

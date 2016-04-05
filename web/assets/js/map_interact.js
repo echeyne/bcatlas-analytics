@@ -54,7 +54,7 @@ function getParcelId(map_response) {
         var id_list = [];
         for (var i = 0, ii = result.length; i < ii; ++i) {
             // save the parcel id
-            id_list.push(result[i].get('GISLkp'));
+            id_list.push(result[i].get('gislkp'));
         }
     }
     return id_list;
@@ -105,6 +105,7 @@ function getSubDivId(parcelList) {
             displayDemoNHS(json["csduid"]);
         },
         error: function(result) {
+            console.log(result);
             console.log("Error " + result.toString());
         }
     });
@@ -285,26 +286,68 @@ var draw;
 $('#polygon').on('click', function() {
     clearMap();
     draw = new ol.interaction.Draw({
-        features: feature_overlay.getFeatures(),
+        source: drawing_source,
         type: "Polygon"
     });
     map.addInteraction(draw);
     draw.on('drawend', function() {
         map.removeInteraction(draw);
+
         controlDoubleClickZoom(false);
+        // give map time to draw shape
+        setTimeout(function() {
+            // get the coordinates of the points in the shape
+            var geom_str = getGeomStr();
+            if (geom_str.length > 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "../getshapeintersection?geom=" + geom_str,
+                    success: function(result) {
+                        console.log(result);
+                    },
+                    error: function(result) {
+                        console.log(result);
+                        console.log("Error " + result.toString());
+                    }
+                });
+            }
+
+        }, 251);
+
         // Delay execution of activation of double click zoom function and setting draw to null
         setTimeout(function() {
             controlDoubleClickZoom(true);
             draw = null;
-        }, 251);
-
+        }, 300);
     });
+});
 
-})
+// generate a string of geometry points to be used when finding selected points using PostGIS
+function getGeomStr() {
+    // there will be only one feature in the layer
+    var coords_arr = drawing_source.getFeatures()[0].getGeometry().getCoordinates().toString().split(",");
+    var coords_list = '';
+
+    // loop through all of the points in coords_arr
+    for (var i=0; i<coords_arr.length; i++) {
+        // get the xy of each point and format it in the way that PostGIS query needs
+        // make URL safe using '_'
+        coords_list += coords_arr[i];
+        if (i % 2 != 0) {
+            coords_list += '_1,';
+        }
+        else if (i % 2 == 0) {
+            coords_list += '_';
+        }
+    }
+    coords_list = coords_list.slice(0, -1);
+    return coords_list;
+
+}
 
 // clear all drawn elements from the map
 function clearMap() {
-    feature_overlay.setFeatures(new ol.Collection());
+    drawing_layer.getSource().clear();
     highlight_overlay.getSource().clear();
 }
 

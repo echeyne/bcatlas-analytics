@@ -8,7 +8,7 @@ var parcels = new ol.layer.Tile({
     source:  new ol.source.TileWMS({
         url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
         params: {
-            'LAYERS': 'BCAtlas:lumby_parcels'
+            'LAYERS': 'BCAtlas:lumby_parcel_postgis'
         },
         serverType: 'geoserver'
     })
@@ -63,6 +63,7 @@ var roads_label = new ol.layer.Tile({
 
 var ortho = new ol.layer.Tile({
     title: 'Orthophotos',
+    visible: false,
     source:  new ol.source.TileWMS({
         url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
         params: {
@@ -118,6 +119,15 @@ var map = new ol.Map({
     loadTilesWhileInteracting: true,
     bounds: [352474.5483727603, 5561335.500385814, 379061.82093737787, 5604565.543100912]
 });
+
+// Add drawing vector source
+var drawing_source = new ol.source.Vector();
+
+//Add drawing layer
+var drawing_layer = new ol.layer.Vector({
+    source: drawing_source
+});
+map.addLayer(drawing_layer);
 
 var feature_overlay = new ol.FeatureOverlay({
     map: map,

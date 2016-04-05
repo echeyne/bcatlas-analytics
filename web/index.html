@@ -43,8 +43,15 @@
     <!-- Map -->
     <div class="col-md-8 main-panel">
         <div id="legend">
-            <img id="layers-icon" src="assets/images/layers.png" alt="click to open layers" title="Select Layers" />
+            <img id="layers-icon" src="assets/images/layers-24.png" alt="click to expand legend" title="Select Layers" />
             <div id="legend-content" class="closed"></div>
+        </div>
+        <div id="map-tools">
+            <img id="tools-icon" src="assets/images/tools-24.png" alt="click to open map tools" title="Open Map Tools" />
+            <div id="tools-content" class="closed">
+                <img id="polygon" class="map-tool" src="assets/images/polygon.png" alt="click to draw polygon" title="draw polygon">
+                <p style="display:inline-block">Select multiple features within a polygon</p>
+            </div>
         </div>
         <div id="map" class="map"></div>
         <div id="collapse" class="open"><img src="assets/images/collapse_arrow.png" title="Collapse Side Panel" alt="Toggle Panel"/></div>
