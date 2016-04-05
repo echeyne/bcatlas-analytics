@@ -17,7 +17,7 @@ map.on('singleclick', function (evt) {
             $.ajax({
                 url: jsonURL,
                 success: function (response) {
-                    highlightFeature(response);
+                    highlightFeature(response, true);
                     $.when(getParcelId(response)).done(function (parcel_list) {
                         if (typeof(parcel_list) != 'undefined') {
                             // get the subdivision information for the parcels and display it in the SUMMARY tab
@@ -38,8 +38,10 @@ map.on('singleclick', function (evt) {
 });
 
 // highlight the feature that is selected on single click
-function highlightFeature(map_response) {
-    clearMap();
+function highlightFeature(map_response, clear) {
+    if (clear) {
+        clearMap();
+    }
     var parser = new ol.format.GeoJSON();
     var source = highlight_overlay.getSource();
     source.addFeatures(parser.readFeatures(map_response));
@@ -60,36 +62,17 @@ function getParcelId(map_response) {
     return id_list;
 }
 
-// retrieve the census info related to a given parcel id
-// request sent to GetSubDivInfo.java
-function getSubDivInfo(parcelId) {
-    $.ajax({
-        type: "POST",
-        url: "../getsubdivinfo",
-        data: {parcelId: parcelId[0]}, // right now parcel id list is hardcoded to only take in the first element
-        success: function(result) {
-            var json = jQuery.parseJSON(result);
-            displaySummary(json);
-            displayDemoCensus(json);
-            displayDemoNHS(json);
-        },
-        error: function(result) {
-            console.log('Error ' + result.toString());
-        }
-    });
-}
-
 // get the address, lot info, assessment value given a list of parcels
 function getParcelInfo(parcel_list) {
     $.ajax({
-        type: "GET",
-        url: "../getparcelinfo?parcelList=" + parcel_list.toString(),
+        type: 'GET',
+        url: '../getparcelinfo?parcelList=' + parcel_list.toString(),
         success: function(result) {
             var json = jQuery.parseJSON(result);
             displayList(json);
         },
         error: function(result) {
-            console.log("Error " + result.toString());
+            console.log('Error ' + result.toString());
         }
     });
 }
@@ -287,7 +270,7 @@ $('#polygon').on('click', function() {
     clearMap();
     draw = new ol.interaction.Draw({
         source: drawing_source,
-        type: "Polygon"
+        type: 'Polygon'
     });
     map.addInteraction(draw);
     draw.on('drawend', function() {
@@ -300,10 +283,36 @@ $('#polygon').on('click', function() {
             var geom_str = getGeomStr();
             if (geom_str.length > 0) {
                 $.ajax({
-                    type: "GET",
-                    url: "../getshapeintersection?geom=" + geom_str,
+                    type: 'GET',
+                    url: '../getshapeintersection?geom=' + geom_str,
                     success: function(result) {
-                        console.log(result);
+                        var points = jQuery.parseJSON(result);
+                        var parcel_list = []; // keep track of all the parcel ids
+                        clearMap(); // clear the map before we start highlighting features
+                        $.each(points, function(key, val) {
+                            parcel_list.push(key);
+                            var view = map.getView();
+                            var jsonURL = parcels.getSource().getGetFeatureInfoUrl(
+                                [val['X'], val['Y']],
+                                view.getResolution(),
+                                view.getProjection(),
+                                {
+                                    'INFO_FORMAT': 'application/json'
+                                }
+                            );
+                            if (jsonURL) {
+                                $.ajax({
+                                    url: jsonURL,
+                                    success: function (response) {
+                                        highlightFeature(response, false);
+                                    },
+                                    error: function (response) {
+                                        console.log(response)
+                                    }
+                                })
+                            }
+                        });
+                        getParcelInfo(parcel_list);
                     },
                     error: function(result) {
                         console.log(result);

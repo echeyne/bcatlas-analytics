@@ -58,21 +58,23 @@ public class GetShapeIntersection extends HttpServlet {
         String geom = request.getParameter("geom");
         geom = geom.replaceAll("_", " ");
 
-        String sql = "SELECT gislkp FROM lumbyparcels AS p, "
+        String sql = "SELECT gislkp, ST_X(ST_Centroid(geom)), ST_Y(ST_Centroid(geom)) FROM lumbyparcels AS p, "
             + "(SELECT ST_TRANSFORM(ST_Polygon(ST_GeomFromText('LINESTRING(" + geom + ")'), 3347),3347) as geometry) AS poly "
             + "WHERE ST_Intersects(p.geom, poly.geometry) = ?";
 
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
-        StringBuilder builder = new StringBuilder();
+        JsonObjectBuilder builder = Json.createObjectBuilder();
 
         try {
             preparedStatement = con.prepareStatement(sql);
             preparedStatement.setBoolean(1, true);
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                builder.append(rs.getString("gislkp"));
-                builder.append(',');
+                builder.add(rs.getString("gislkp"),Json.createObjectBuilder()
+                    .add("X", rs.getDouble("st_x"))
+                    .add("Y", rs.getDouble("st_y"))
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -95,9 +97,8 @@ public class GetShapeIntersection extends HttpServlet {
                 }
             }
         }
-        String str = builder.toString();
         java.io.PrintWriter out = response.getWriter();
-        out.println(str.substring(0, str.length()-1));
+        out.println(builder.build().toString());
         out.close();
     }
 
