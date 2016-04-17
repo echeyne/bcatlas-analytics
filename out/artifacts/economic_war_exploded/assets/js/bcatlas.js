@@ -41,7 +41,7 @@ $('#legend-content').on("click", function(e) {
     e.stopPropagation();
 });
 
-// automatically closes the legend when the user clicks off of it
+// automatically closes the legend, tools, and analysis dropdowns when the user clicks off
 $(document).click( function() {
     if ($('#legend-content').hasClass('open')) {
         $("#legend-content").slideToggle();
@@ -53,9 +53,14 @@ $(document).click( function() {
         $("#tools-content").removeClass('open');
         $("#tools-content").addClass('closed');
     }
+    if ($('#analysis-content').hasClass('open')) {
+        $("#analysis-content").slideToggle();
+        $("#analysis-content").removeClass('open');
+        $("#analysis-content").addClass('closed');
+    }
 });
 
-// show or hide the legend
+// show or hide the tools content
 $('#tools-icon').on("click", function(e){
     e.stopPropagation();
     $( "#tools-content" ).slideToggle();
@@ -66,5 +71,19 @@ $('#tools-icon').on("click", function(e){
     else {
         $("#tools-content").removeClass('closed');
         $("#tools-content").addClass('open');
+    }
+});
+
+// show or hide the analysis content
+$('#analysis-icon').on("click", function(e){
+    e.stopPropagation();
+    $( "#analysis-content" ).slideToggle();
+    if ($('#analysis-content').hasClass('open')) {
+        $("#analysis-content").removeClass('open');
+        $("#analysis-content").addClass('closed');
+    }
+    else {
+        $("#analysis-content").removeClass('closed');
+        $("#analysis-content").addClass('open');
     }
 });

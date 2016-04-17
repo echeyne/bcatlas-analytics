@@ -56,18 +56,23 @@ public class GetCenSubDiv extends HttpServlet {
 
     public void retrieveCSDUID(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
         String parcelId = request.getParameter("parcelId");
+        String sql = "SELECT DISTINCT csduid FROM ParcelMappings WHERE jur_roll = ANY (?)";
+        String[] parcelArr = parcelId.split(",");
 
-        String sql = "SELECT csduid FROM Parcel WHERE jur_roll = ?";
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         try {
             preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setLong(1, Long.parseLong(parcelId.trim()));
+            preparedStatement.setString(1, parcelId.trim());
+            preparedStatement.setArray(1, con.createArrayOf("bigint", parcelArr));
             rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                builder.add("csduid", rs.getInt("csduid"));
+                int csduid = rs.getInt("csduid");
+                if (!rs.wasNull()) {
+                    builder.add("csduid", csduid);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

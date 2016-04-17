@@ -21,7 +21,7 @@ map.on('singleclick', function (evt) {
                     $.when(getParcelId(response)).done(function (parcel_list) {
                         if (typeof(parcel_list) != 'undefined') {
                             // get the subdivision information for the parcels and display it in the SUMMARY tab
-                            getSubDivId(parcel_list[0]);
+                            getSubDivId(parcel_list);
 
                             // get the BCA data for the parcels and display it in the LIST tab
                             getParcelInfo(parcel_list);
@@ -70,6 +70,9 @@ function getParcelInfo(parcel_list) {
         success: function(result) {
             var json = jQuery.parseJSON(result);
             displayList(json);
+            if (parcel_list.length > 1) {
+                displayListAgg(json);
+            }
         },
         error: function(result) {
             console.log('Error ' + result.toString());
@@ -101,30 +104,68 @@ function displayList(bca_data) {
     // the length will be 0 when a property is clicked on that has no associated BCA data
     if (Object.keys(bca_data).length > 0) {
         // create a table to hold the results
-        var html = '<table class="table table-condensed">';
+        var html = '<table id="list-table" class="table table-condensed">';
 
         $.each( bca_data, function( id, json ) {
             html += '<tr><td colspan="2">' + json["address"] + '</td></tr>';
-            html += '<tr><td class="strong">Jurisdiction Roll</td><td>' + id + '</td></tr>';
-            html += '<tr><td class="strong">Lot Size</td><td>' + json["lot_size"] + ' ' + json["lot_dim"] + '</td></tr>';
-            html += '<tr><td class="strong">Assessed Land Value</td><td> $' + json["land_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
-            html += '<tr><td class="strong">Assessed Building Value</td><td> $' + json["build_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
-            html += '<tr><td class="strong">Total Assessed Value</td><td> $' + json["total_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Jurisdiction Roll</td><td class="text-right">' + id + '</td></tr>';
+            html += '<tr><td class="strong">Lot Size</td><td class="text-right">' + json["lot_size"] + ' ' + json["lot_dim"] + '</td></tr>';
+            html += '<tr><td class="strong">Assessed Land Value</td><td class="text-right"> $' + json["land_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Assessed Building Value</td><td class="text-right"> $' + json["build_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Total Assessed Value</td><td class="text-right"> $' + json["total_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td colspan="2"><hr></td></tr>'
         });
 
         html += '</table>';
     }
     else {
-        var html = '<p>No data could be found for the selected property.</p>'
+        var html = '<p>No data could be found for the selected parcel(s).</p>'
     }
     $("#list").append(html);
+}
+
+// display a summary of the selected parcels in the LIST tab
+// data comes in as a JSON
+// only do this if more than one parcel is selected
+function displayListAgg(bca_data) {
+    var building_sum = 0;
+    var land_sum = 0;
+    var min_val = Number.MAX_SAFE_INTEGER;
+    var max_val = 0;
+    var num_parcels = 0;
+
+    if (Object.keys(bca_data).length > 0) {
+        // create a table to hold the results
+        var html = '<table id="list-agg-table" class="table table-condensed">';
+
+        $.each( bca_data, function( id, json ) {
+            num_parcels++;
+            building_sum += parseInt(json['build_asses']);
+            land_sum += parseInt(json['land_asses']);
+            if (parseInt(json['build_asses']) + parseInt(json['land_asses']) < min_val) {
+                min_val = parseInt(json['build_asses']) + parseInt(json['land_asses']);
+            }
+            if (parseInt(json['build_asses']) + parseInt(json['land_asses']) > max_val) {
+                max_val = parseInt(json['build_asses']) + parseInt(json['land_asses']);
+            }
+        });
+        html += '<tr><td class="strong">Number of parcels:</td><td class="text-right">' + num_parcels + '</td></tr>';
+        html += '<tr><td class="strong">Maximum assessed value:</td><td class="text-right"> $' + max_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td class="strong">Minimum assessed value:</td><td class="text-right"> $' + min_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td class="strong">Total assessed value:</td><td class="text-right"> $' + (building_sum+ land_sum).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td class="strong">Average assessed value:</td><td class="text-right"> $' + (((building_sum + land_sum)/num_parcels).toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+        html += '<tr><td colspan="2"><hr></td></tr>'
+        html += '</table>';
+
+        $('#list').prepend(html);
+    }
 }
 
 // display a summary of the surrounding demographics
 function displaySummary(csduid) {
     // undefined csduid occurs when user clicks on a property that has no associated BCA data
     if (typeof(csduid) == 'undefined') {
-        var html = '<p>No data could be found for the selected property.</p>';
+        var html = '<p>No data could be found for the selected parcel(s).</p>';
         $('#summary').empty();
         $('#summary').append(html);
     }
@@ -166,7 +207,7 @@ function displaySummary(csduid) {
 function displayDemoCensus(csduid) {
     // undefined csduid occurs when user clicks on a property that has no associated BCA data
     if (typeof(csduid) == 'undefined') {
-        var html = '<p>No data could be found for the selected property.</p>';
+        var html = '<p>No data could be found for the selected parcel(s).</p>';
         $('#demographics-census').empty();
         $('#demographics-census').append(html);
     }
@@ -220,7 +261,7 @@ function displayDemoCensus(csduid) {
 function displayDemoNHS(csduid) {
     // undefined csduid occurs when user clicks on a property that has no associated BCA data
     if (typeof(csduid) == 'undefined') {
-        var html = '<p>No data could be found for the selected property.</p>';
+        var html = '<p>No data could be found for the selected parcel(s).</p>';
         $('#demographics-nhs').empty();
         $('#demographics-nhs').append(html);
     }
@@ -312,7 +353,10 @@ $('#polygon').on('click', function() {
                                 })
                             }
                         });
+                        // display the selected parcels in the LIST tab
                         getParcelInfo(parcel_list);
+                        // get the subdivision information for the parcels and display it in the SUMMARY tab
+                        getSubDivId(parcel_list);
                     },
                     error: function(result) {
                         console.log(result);

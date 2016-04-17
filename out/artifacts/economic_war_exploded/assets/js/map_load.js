@@ -3,6 +3,7 @@
 
 // load all of the layers from geoserver
 // each layer must be loaded individually so it can be manipulated by the legend
+
 var parcels = new ol.layer.Tile({
     title: 'Parcels',
     source:  new ol.source.TileWMS({
@@ -60,7 +61,6 @@ var roads_label = new ol.layer.Tile({
     })
 });
 
-
 var ortho = new ol.layer.Tile({
     title: 'Orthophotos',
     visible: false,
@@ -68,6 +68,18 @@ var ortho = new ol.layer.Tile({
         url: 'http://52.11.218.131:8080/geoserver/Land_Info_Lumby/gwc/service/wms',
         params: {
             'LAYERS': 'Land_Info_Lumby:Lumby_Orthos'
+        },
+        serverType: 'geoserver'
+    })
+});
+
+var parcel_val = new ol.layer.Tile({
+    title: 'Value per sq ft',
+    visible: false,
+    source:  new ol.source.TileWMS({
+        url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
+        params: {
+            'LAYERS': 'bcatlas:lumby_parcelvalue'
         },
         serverType: 'geoserver'
     })
@@ -96,6 +108,7 @@ var highlight_overlay = new ol.layer.Vector({
 var layers = [
     ortho,
     parcels,
+    parcel_val,
     parcels_labels,
     roads,
     roads_label,
@@ -145,12 +158,26 @@ var feature_overlay = new ol.FeatureOverlay({
 
 // add each layer as a checkbox in the legend
 map.getLayers().forEach(function(layer) {
-    if (layer != highlight_overlay) {
+    if (layer != highlight_overlay && layer != feature_overlay && layer != drawing_layer && layer != parcel_val) {
         var html = '<div class="checkbox">'
             + '<label><input type="checkbox" value="' + layer.get('title') +'" onclick="toggleLayer(this.value, $(this).is(\':checked\'))"'
             + ( layer.getVisible() ?  'checked>' : '>')
             + layer.get('title') + '</label>'
             + '</div>';
         $('#legend-content').append(html);
+    }
+    else if (layer == parcel_val) {
+        var html = '<div class="checkbox">'
+            + '<label><input type="checkbox" value="' + layer.get('title') +'" onclick="toggleLayer(this.value, $(this).is(\':checked\'))"'
+            + ( layer.getVisible() ?  'checked>' : '>')
+            + layer.get('title') + '</label>'
+            + '</div>';
+        html += '<div class="legend-rankings small text-muted">' +
+                    '<span class="prop-b1">&#9608;</span> $0-$16.60/sq ft' +
+                    '<br><span class="prop-b2">&#9608;</span> $16.61-$25.40/sq ft' +
+                    '<br><span class="prop-b3">&#9608;</span> $25.41-$36.70/sq ft ' +
+                    '<br><span class="prop-b4">&#9608;</span> $36.71/sq ft+' +
+                '</div>';
+        $('#analysis-content').append(html);
     }
 });
