@@ -227,7 +227,7 @@ function formatIncomeData(json) {
 function drawChart(data, title, div_id) {
     var options = {
         titlePosition: 'none',
-        chartArea: {width:'92%',height:'92%'},
+        chartArea: {width:'100%',height:'92%'},
         tooltip: {text: 'percentage'},
         pieSliceText: 'none'
     };

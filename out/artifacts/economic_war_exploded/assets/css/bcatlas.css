@@ -121,6 +121,23 @@ body, html {
     color:#980043;
 }
 
+/* colors of the squar boxes describing building % */
+.legend-rankings .build-b1 {
+    color:#bdc9e1;
+}
+
+.legend-rankings .build-b2 {
+    color:#74a9cf;
+}
+
+.legend-rankings .build-b3 {
+    color:#2b8cbe;
+}
+
+.legend-rankings .build-b4 {
+    color:#045a8d;
+}
+
 #collapse {
     background: #fcfcfc;
     z-index: 1000;
@@ -201,4 +218,3 @@ body, html {
     text-align: center;
     font-weight: 600;
 }
-

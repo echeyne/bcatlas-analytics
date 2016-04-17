@@ -243,11 +243,29 @@ function displayDemoCensus(csduid) {
                 $('#demographics-census').empty();
                 $('#demographics-census').append(html);
 
-                formatAgeData(demo_data);
-                formatMarriageData(demo_data);
-                formatLanguageData(demo_data);
-                formatDwellingTypeData(demo_data);
-                formatDwellingSizeData(demo_data);
+
+                // the first time that the user click on the div format the charts
+                // cannot do while charts are because of legend sizing and display
+                // block property, if the census tab is already open format right away
+                if ($('#census-header').attr('aria-expanded')) {
+                    formatAgeData(demo_data);
+                    formatMarriageData(demo_data);
+                    formatLanguageData(demo_data);
+                    formatDwellingTypeData(demo_data);
+                    formatDwellingSizeData(demo_data);
+                }
+                else {
+                    $('#census-header').on('click', function(e) {
+                        setTimeout(function() {
+                            formatAgeData(demo_data);
+                            formatMarriageData(demo_data);
+                            formatLanguageData(demo_data);
+                            formatDwellingTypeData(demo_data);
+                            formatDwellingSizeData(demo_data);
+                            $(this).off(e);
+                        }, 250);
+                    });
+                }
             },
             error: function (result) {
                 console.log("Error " + result.toString());
@@ -293,9 +311,24 @@ function displayDemoNHS(csduid) {
                 $('#demographics-nhs').empty();
                 $('#demographics-nhs').append(html);
 
-                formatEducationData(demo_data);
-                formatOccupationData(demo_data);
-                formatIncomeData(demo_data);
+                // the first time that the user click on the div format the charts
+                // cannot do while charts are because of legend sizing and display
+                // block property, if the census tab is already open format right away
+                if ($('#nhs-header').attr('aria-expanded')) {
+                    formatEducationData(demo_data);
+                    formatOccupationData(demo_data);
+                    formatIncomeData(demo_data);
+                }
+                else {
+                    $('#nhs-header').on('click', function(e) {
+                        setTimeout(function() {
+                            formatEducationData(demo_data);
+                            formatOccupationData(demo_data);
+                            formatIncomeData(demo_data);
+                            $(this).off(e);
+                        }, 250);
+                    });
+                }
             },
             error: function (result) {
                 console.log("Error " + result.toString());

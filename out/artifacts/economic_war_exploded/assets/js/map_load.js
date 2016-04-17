@@ -85,15 +85,24 @@ var parcel_val = new ol.layer.Tile({
     })
 });
 
+var building_pct = new ol.layer.Tile({
+    title: 'Building value as % of total value',
+    visible: false,
+    source:  new ol.source.TileWMS({
+        url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
+        params: {
+            'LAYERS': 'bcatlas:buildingPct'
+        },
+        serverType: 'geoserver'
+    })
+});
+
 var highlight_overlay = new ol.layer.Vector({
     title: 'Highlighted Feature',
     source: new ol.source.Vector({wrapX: false}),
     style: new ol.style.Style({
-        fill: new ol.style.Fill({
-            color: 'rgba(255, 255, 255, 0.2)'
-        }),
         stroke: new ol.style.Stroke({
-            color: '#B894FF',
+            color: '#4c00ff',
             width: 4
         }),
         image: new ol.style.Circle({
@@ -109,6 +118,7 @@ var layers = [
     ortho,
     parcels,
     parcel_val,
+    building_pct,
     parcels_labels,
     roads,
     roads_label,
@@ -142,23 +152,9 @@ var drawing_layer = new ol.layer.Vector({
 });
 map.addLayer(drawing_layer);
 
-var feature_overlay = new ol.FeatureOverlay({
-    map: map,
-    style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
-            color: [255, 0, 0, 0.6],
-            width: 2
-        }),
-        fill: new ol.style.Fill({
-            color: [255, 0, 0, 0.2]
-        }),
-        zIndex: 1000
-    })
-});
-
 // add each layer as a checkbox in the legend
 map.getLayers().forEach(function(layer) {
-    if (layer != highlight_overlay && layer != feature_overlay && layer != drawing_layer && layer != parcel_val) {
+    if (layer != highlight_overlay && layer != drawing_layer && layer != parcel_val && layer != building_pct) {
         var html = '<div class="checkbox">'
             + '<label><input type="checkbox" value="' + layer.get('title') +'" onclick="toggleLayer(this.value, $(this).is(\':checked\'))"'
             + ( layer.getVisible() ?  'checked>' : '>')
@@ -176,8 +172,22 @@ map.getLayers().forEach(function(layer) {
                     '<span class="prop-b1">&#9608;</span> $0-$16.60/sq ft' +
                     '<br><span class="prop-b2">&#9608;</span> $16.61-$25.40/sq ft' +
                     '<br><span class="prop-b3">&#9608;</span> $25.41-$36.70/sq ft ' +
-                    '<br><span class="prop-b4">&#9608;</span> $36.71/sq ft+' +
+                    '<br><span class="prop-b4">&#9608;</span> $36.71/sq ft +' +
                 '</div>';
+        $('#analysis-content').append(html);
+    }
+    else if (layer == building_pct) {
+        var html = '<div class="checkbox">'
+            + '<label><input type="checkbox" value="' + layer.get('title') +'" onclick="toggleLayer(this.value, $(this).is(\':checked\'))"'
+            + ( layer.getVisible() ?  'checked>' : '>')
+            + layer.get('title') + '</label>'
+            + '</div>';
+        html += '<div class="legend-rankings small text-muted">' +
+        '<span class="build-b1">&#9608;</span> 0%-67%' +
+        '<br><span class="build-b2">&#9608;</span> 68%-75%' +
+        '<br><span class="build-b3">&#9608;</span> 76%-81% ' +
+        '<br><span class="build-b4">&#9608;</span> 81% +' +
+        '</div>';
         $('#analysis-content').append(html);
     }
 });
