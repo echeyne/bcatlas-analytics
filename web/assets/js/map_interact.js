@@ -149,7 +149,7 @@ function displayListAgg(bca_data) {
                 max_val = parseInt(json['build_asses']) + parseInt(json['land_asses']);
             }
         });
-        html += '<tr><td class="strong">Number of parcels:</td><td class="text-right">' + num_parcels + '</td></tr>';
+        html += '<tr><td class="strong">Number of parcels with BC Assessment data:</td><td class="text-right">' + num_parcels + '</td></tr>';
         html += '<tr><td class="strong">Maximum assessed value:</td><td class="text-right"> $' + max_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
         html += '<tr><td class="strong">Minimum assessed value:</td><td class="text-right"> $' + min_val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
         html += '<tr><td class="strong">Total assessed value:</td><td class="text-right"> $' + (building_sum+ land_sum).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';

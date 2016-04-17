@@ -4,6 +4,8 @@
     <title>BCAtlas Analytics</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
     <!-- CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -26,17 +28,6 @@
 <!--Header -->
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="navbar-brand">BCAtlas Analytics</div>
-
-    <!--<div class="col-sm-3 col-md-3 pull-right">-->
-        <!--<form class="navbar-form" role="search">-->
-            <!--<div class="input-group">-->
-                <!--<input type="text" class="form-control" placeholder="Search" name="search-term" id="search-term">-->
-                <!--<div class="input-group-btn">-->
-                    <!--<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</form>-->
-    <!--</div>-->
 </div>
 
 <div class="content">
@@ -50,7 +41,10 @@
             <img id="tools-icon" src="assets/images/tools-24.png" alt="click to open map tools" title="Open Map Tools" />
             <div id="tools-content" class="closed">
                 <img id="polygon" class="map-tool" src="assets/images/polygon.png" alt="click to draw polygon" title="draw polygon">
-                <p style="display:inline-block">Select multiple features within a polygon</p>
+                <p class="small text-muted" style="display:inline-block">Select features within a polygon</p>
+                <br>
+                <img id="eraser" class="map-tool" src="assets/images/eraser.png" alt="click to clear the map" title="clear map">
+                <p class="small text-muted" style="display:inline-block">Clear map</p>
             </div>
         </div>
         <div id="analysis-tools">
@@ -64,14 +58,6 @@
     <!-- Collapse button -->
     <!-- Side pane -->
     <div class="col-md-4 side-panel">
-        <!--<div class="map-tools">-->
-            <!--<img id="polygon" class="map-tool" src="assets/images/polygon.png" alt="click to draw polygon" title="draw polygon">-->
-            <!--<img id="add_parcel" class="map-tool" src="assets/images/add_parcel.png" alt="click to add parcel" title="add parcel">-->
-            <!--<img id="remove_parcel" class="map-tool" src="assets/images/remove_parcel.png" alt="click to remove parcel" title="remove parcel">-->
-            <!--<img id="print_map" class="map-tool" src="assets/images/print.png" alt="click to print map" title="print">-->
-            <!--<img id="download" class="map-tool" src="assets/images/download.png" alt="click to download data" title="download data">-->
-        <!--</div>-->
-
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#list" class="text-center">Properties<br>List</a></li>
             <li><a data-toggle="tab" href="#summary" class="text-center">Population<br>Summary</a></li>

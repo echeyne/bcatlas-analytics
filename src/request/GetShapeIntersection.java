@@ -58,8 +58,8 @@ public class GetShapeIntersection extends HttpServlet {
         String geom = request.getParameter("geom");
         geom = geom.replaceAll("_", " ");
 
-        String sql = "SELECT gislkp, ST_X(ST_Centroid(geom)), ST_Y(ST_Centroid(geom)) FROM lumbyparcels AS p, "
-            + "(SELECT ST_TRANSFORM(ST_Polygon(ST_GeomFromText('LINESTRING(" + geom + ")'), 3347),3347) as geometry) AS poly "
+        String sql = "SELECT gislkp, ST_X(ST_Centroid(geom)), ST_Y(ST_Centroid(geom)) FROM ParcelGIS AS p, "
+            + "(SELECT ST_TRANSFORM(ST_Polygon(ST_GeomFromText('LINESTRING(" + geom + ")'), 26911),26911) as geometry) AS poly "
             + "WHERE ST_Intersects(p.geom, poly.geometry) = ?";
 
         PreparedStatement preparedStatement = null;

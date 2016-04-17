@@ -151,16 +151,33 @@ body, html {
     cursor: pointer;
 }
 
-@media (max-width: 991px) {
-    #collapse {
-        display: none;
-    }
-}
-
 /* -- RIGHT PANEL -- */
 .side-panel {
     background-color: #fcfcfc;
     border-left: 1px solid;
+    border-top: 0;
+}
+
+@media (max-width: 991px) {
+    #collapse {
+        display: none;
+    }
+    .side-panel {
+        border-left: 0;
+        border-top: 1px solid;
+    }
+}
+
+#tabs {
+    overflow:hidden;
+    white-space: nowrap;
+    z-index:-1;
+    position:static;
+}
+
+#tabs>li {
+    float:none;
+    display:inline-block;
 }
 
 .nav-tabs {

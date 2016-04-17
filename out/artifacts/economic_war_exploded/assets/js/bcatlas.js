@@ -87,3 +87,25 @@ $('#analysis-icon').on("click", function(e){
         $("#analysis-content").addClass('open');
     }
 });
+
+$('#analysis-content').on("click", function(e) {
+    e.stopPropagation();
+});
+
+// clear the map and reset panel contents when user
+// clicks the eraser icon
+$('#eraser').on('click', function() {
+    clearMap();
+
+    $('#list').empty()
+    $('#list').append('<p>Select a property on the map.</p>');
+
+    $('#summary').empty()
+    $('#summary').append('<p>Select a property on the map to view a summary of the property\'s surrounding population based on the 2011 Canadian Census.</p>');
+
+    $('#demographics-census').empty()
+    $('#demographics-census').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian Census.</p>');
+
+    $('#demographics-nhs').empty()
+    $('#demographics-nhs').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian National Household Survey.</p>');
+});
