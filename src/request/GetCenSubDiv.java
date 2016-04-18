@@ -23,7 +23,6 @@ public class GetCenSubDiv extends HttpServlet {
     private Connection con;
     private String url, username, password;
 
-
     public GetCenSubDiv() throws IOException {
         properties = new ConnectionProperties();
         url = properties.getProperty("database.url") + properties.getProperty("database");

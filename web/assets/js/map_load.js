@@ -9,7 +9,7 @@ var parcels = new ol.layer.Tile({
     source:  new ol.source.TileWMS({
         url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
         params: {
-            'LAYERS': 'BCAtlas:lumby_parcel_postgis'
+            'LAYERS': 'BCAtlas:parcel_postgis'
         },
         serverType: 'geoserver'
     })
@@ -79,7 +79,7 @@ var parcel_val = new ol.layer.Tile({
     source:  new ol.source.TileWMS({
         url: 'http://159.203.2.8:8080/geoserver/bcatlas/wms',
         params: {
-            'LAYERS': 'bcatlas:lumby_parcelvalue'
+            'LAYERS': 'bcatlas:parcelvalue'
         },
         serverType: 'geoserver'
     })
