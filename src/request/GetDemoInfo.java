@@ -1,6 +1,6 @@
 /*
 * Creates a detailed overview of information to be displayed in the demographics tab given either a subdivision id (csduid) or
-* a dissemination area id (dauid)
+* parcel id (pid)
  */
 
 package request;

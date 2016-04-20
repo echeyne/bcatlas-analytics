@@ -169,10 +169,11 @@ map.getLayers().forEach(function(layer) {
             + layer.get('title') + '</label>'
             + '</div>';
         html += '<div class="legend-rankings small text-muted">' +
-                    '<span class="prop-b1">&#9608;</span> $0-$16.60/sq ft' +
-                    '<br><span class="prop-b2">&#9608;</span> $16.61-$25.40/sq ft' +
-                    '<br><span class="prop-b3">&#9608;</span> $25.41-$36.70/sq ft ' +
-                    '<br><span class="prop-b4">&#9608;</span> $36.71/sq ft +' +
+                    '<span class="prop-b1">&#9608;</span> $0.12-$15.26/sq ft' +
+                    '<br><span class="prop-b2">&#9608;</span> $15.27-$27.76/sq ft' +
+                    '<br><span class="prop-b3">&#9608;</span> $27.77-$39.60/sq ft' +
+                    '<br><span class="prop-b4">&#9608;</span> $39.61-$55.37/sq ft' +
+                    '<br><span class="prop-b5">&#9608;</span> $55.38-$97.71/sq ft' +
                 '</div>';
         $('#analysis-content').append(html);
     }
@@ -183,10 +184,11 @@ map.getLayers().forEach(function(layer) {
             + layer.get('title') + '</label>'
             + '</div>';
         html += '<div class="legend-rankings small text-muted">' +
-        '<span class="build-b1">&#9608;</span> 0%-67%' +
-        '<br><span class="build-b2">&#9608;</span> 68%-75%' +
-        '<br><span class="build-b3">&#9608;</span> 76%-81% ' +
-        '<br><span class="build-b4">&#9608;</span> 81% +' +
+        '<span class="build-b1">&#9608;</span> 1%-20%' +
+        '<br><span class="build-b2">&#9608;</span> 21%-39%' +
+        '<br><span class="build-b3">&#9608;</span> 40%-58%' +
+        '<br><span class="build-b4">&#9608;</span> 59%-77%' +
+        '<br><span class="build-b5">&#9608;</span> 78%-95%' +
         '</div>';
         $('#analysis-content').append(html);
     }

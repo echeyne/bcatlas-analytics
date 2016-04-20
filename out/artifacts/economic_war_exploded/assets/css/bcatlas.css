@@ -106,35 +106,43 @@ body, html {
 
 /* colors for the square boxes describing property values */
 .legend-rankings .prop-b1 {
-    color:#d7b5d8;
+    color:#f1eef6;
 }
 
 .legend-rankings .prop-b2 {
-    color:#df65b0;
+    color:#d7b5d8;
 }
 
 .legend-rankings .prop-b3 {
-    color:#dd1c77;
+    color:#df65b0;
 }
 
 .legend-rankings .prop-b4 {
+    color:#dd1c77;
+}
+
+.legend-rankings .prop-b5 {
     color:#980043;
 }
 
 /* colors of the squar boxes describing building % */
 .legend-rankings .build-b1 {
-    color:#bdc9e1;
+    color:#f1eef6;
 }
 
 .legend-rankings .build-b2 {
-    color:#74a9cf;
+    color:#bdc9e1;
 }
 
 .legend-rankings .build-b3 {
-    color:#2b8cbe;
+    color:#74a9cf;
 }
 
 .legend-rankings .build-b4 {
+    color:#2b8cbe;
+}
+
+.legend-rankings .build-b5 {
     color:#045a8d;
 }
 
