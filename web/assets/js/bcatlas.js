@@ -98,14 +98,14 @@ $('#eraser').on('click', function() {
     clearMap();
 
     $('#list').empty()
-    $('#list').append('<p>Select a property on the map.</p>');
+    $('#list').append('<p>Select a property on the map.</p><hr>');
 
     $('#summary').empty()
-    $('#summary').append('<p>Select a property on the map to view a summary of the property\'s surrounding population based on the 2011 Canadian Census.</p>');
+    $('#summary').append('<p>Select a property on the map to view a summary of the property\'s surrounding population based on the 2011 Canadian Census.</p><hr>');
 
     $('#demographics-census').empty()
-    $('#demographics-census').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian Census.</p>');
+    $('#demographics-census').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian Census.</p><hr>');
 
     $('#demographics-nhs').empty()
-    $('#demographics-nhs').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian National Household Survey.</p>');
+    $('#demographics-nhs').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian National Household Survey.</p><hr>');
 });

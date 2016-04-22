@@ -37,7 +37,7 @@ body, html {
 
 /* --- MAIN CONTENT --- */
 .content {
-    height: calc((100% - 51px) - 1px);
+    height: calc(100% - 51px);
 }
 
 .col-md-3, .col-md-9, .col-md-4, .col-md-8 {
@@ -236,8 +236,10 @@ body, html {
     border: 1px solid #ddd;
     border-top: 0;
     padding: 1em;
+    height: calc(100% - 85px);
     max-height: calc(100% - 85px);
     overflow: scroll;
+    -ms-overflow-style: none;
 }
 
 .throbber img {
