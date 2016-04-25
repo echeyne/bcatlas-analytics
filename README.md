@@ -3,7 +3,8 @@ BCAtlas Analytics is a web-mapping tool aimed to help small municipal government
 
 <h3>Configuration</h3>
 This project can be forked and then configured according to Apache Tomcat's web specification: https://tomcat.apache.org/tomcat-7.0-doc/appdev/deployment.html
-Database connection information must be included in WEB-INF/class/config.properties.
+Database connection information must be included in WEB-INF/class/config.properties. A PostgreSQL database with a PostGIS plugin must be used.
+Data from the Canadian Census and National Household Survey can be downloaded from http://open.canada.ca/.
 
 <h3>File Specification</h3>
 <h4>lib</h4>
@@ -45,5 +46,22 @@ All images used by the web applications
 
 <b>proj4.js</b> - 3rd party Javascript library to transform coordinates from one coordinate system to another (http://proj4js.org/)
 
+<h3>Third Party Libraries Accessed via CDN</h3>
+<b>jQuery</b> - https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js
 
+<b>Bootstrap</b>
 
+CSS - https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css
+
+JS - https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js
+
+<b>OpenLayers</b>
+
+CSS - https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.css
+
+JS - https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js
+
+<b>Coordinate System</b> - http://epsg.io/26911.js
+
+<h3>Author</h3>
+Emily Millard - emilyloumillard@gmail.com
