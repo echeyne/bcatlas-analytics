@@ -14,15 +14,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>GetSubDivInfo</servlet-name>
-        <servlet-class>request.GetSubDivInfo</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>GetSubDivInfo</servlet-name>
-        <url-pattern>/getsubdivinfo</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>GetParcelInfo</servlet-name>
         <servlet-class>request.GetParcelInfo</servlet-class>
     </servlet>
