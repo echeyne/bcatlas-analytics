@@ -13,9 +13,11 @@ hs_err_pid*
 
 data
 config.properties
+out
 economic.iml
 .idea
 thesis_images
+presentation_images
 emilymillard_presentation.pptx
 emilymillard_thesis.docx
 presentation_video.*
