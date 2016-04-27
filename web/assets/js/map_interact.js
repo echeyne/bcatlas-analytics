@@ -110,9 +110,9 @@ function displayList(bca_data) {
             html += '<tr><td colspan="2">' + json["address"] + '</td></tr>';
             html += '<tr><td class="strong">Jurisdiction Roll</td><td class="text-right">' + id + '</td></tr>';
             html += '<tr><td class="strong">Lot Size</td><td class="text-right">' + json["lot_size"] + ' ' + json["lot_dim"] + '</td></tr>';
-            html += '<tr><td class="strong">Assessed Land Value</td><td class="text-right"> $' + json["land_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
-            html += '<tr><td class="strong">Assessed Building Value</td><td class="text-right"> $' + json["build_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
-            html += '<tr><td class="strong">Total Assessed Value</td><td class="text-right"> $' + json["total_asses"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Assessed Land Value</td><td class="text-right"> $' + json["land_assess"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Assessed Building Value</td><td class="text-right"> $' + json["build_assess"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
+            html += '<tr><td class="strong">Total Assessed Value</td><td class="text-right"> $' + json["total_assess"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
             html += '<tr><td colspan="2"><hr></td></tr>'
         });
 
@@ -140,10 +140,10 @@ function displayListAgg(bca_data) {
 
         $.each( bca_data, function( id, json ) {
             num_parcels++;
-            building_sum += parseInt(json['build_asses']);
-            land_sum += parseInt(json['land_asses']);
-            if (parseInt(json['build_asses']) + parseInt(json['land_asses']) < min_val) {
-                min_val = parseInt(json['build_asses']) + parseInt(json['land_asses']);
+            building_sum += parseInt(json['build_assess']);
+            land_sum += parseInt(json['land_assess']);
+            if (parseInt(json['build_assess']) + parseInt(json['land_assess']) < min_val) {
+                min_val = parseInt(json['build_assess']) + parseInt(json['land_assess']);
             }
             if (parseInt(json['build_asses']) + parseInt(json['land_asses']) > max_val) {
                 max_val = parseInt(json['build_asses']) + parseInt(json['land_asses']);
@@ -435,6 +435,18 @@ function getGeomStr() {
 function clearMap() {
     drawing_layer.getSource().clear();
     highlight_overlay.getSource().clear();
+
+    $('#list').empty()
+    $('#list').append('<p>Select a property on the map.</p><hr>');
+
+    $('#summary').empty()
+    $('#summary').append('<p>Select a property on the map to view a summary of the property\'s surrounding population based on the 2011 Canadian Census.</p><hr>');
+
+    $('#demographics-census').empty()
+    $('#demographics-census').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian Census.</p><hr>');
+
+    $('#demographics-nhs').empty()
+    $('#demographics-nhs').append('<p>Select a property on the map to view the detailed demographics of the property\'s surrounding population based on the 2011 Canadian National Household Survey.</p><hr>');
 }
 
 // control double click zoom at the end of the draw event
